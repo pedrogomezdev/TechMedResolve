@@ -1,0 +1,48 @@
+a!formLayout(
+  label: "¿Desea eliminar el mensaje?",
+  contents: {
+    a!richTextDisplayField(
+      value: 
+      {
+        a!richTextItem(
+          text: {
+            a!richTextItem(
+              text: {
+                "Atención, esta acción no se puede deshacer"
+              },
+              style: {
+                "STRONG"
+              }
+            ),
+            "."
+          },
+          size: "MEDIUM"
+        ),
+        " ",
+        char(10),
+        char(10),
+        "Si confirma este formulario, procederá con la eliminación del mensaje de nuestro sistema."
+      }
+
+    )
+  },
+  buttons: a!buttonLayout(
+    primaryButtons: {
+      a!buttonWidget_23r3(
+        label: "Confirmar",
+        submit: true,
+        style: "PRIMARY"
+      )
+    },
+    secondaryButtons: {
+      a!buttonWidget_23r3(
+        label: "Cancelar",
+        value: true,
+        saveInto: ri!cancelar,
+        submit: true,
+        style: "NORMAL",
+        validate: false
+      )
+    }
+  )
+)

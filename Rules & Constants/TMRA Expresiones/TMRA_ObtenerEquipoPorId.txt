@@ -1,0 +1,28 @@
+/* Si el id del equipo llega vacío, nos devolverá nulo, si no, nos devolverá el record del equipo que se corresponda con el id pasado por rule input*/
+if(
+  a!isNullOrEmpty(ri!idEquipo),
+  null,
+  index(
+    a!queryRecordType(
+      recordType: 'recordType!{d0fd0072-2b88-478d-8b52-4ab9b2089e86}TMRA Equipo',
+      fields: {},
+      filters: a!queryLogicalExpression(
+        operator: "AND",
+        filters: {
+          a!queryFilter(
+            field: 'recordType!{d0fd0072-2b88-478d-8b52-4ab9b2089e86}TMRA Equipo.fields.{248d68fd-3cf6-433d-b38a-c200cef88626}id',
+            operator: "=",
+            value: ri!idEquipo
+          )
+        },
+        ignoreFiltersWithEmptyValues: true
+      ),
+      pagingInfo: a!pagingInfo(startIndex: 1, batchSize: 100)
+    ).data,
+    1,
+    cast(
+      'recordType!{d0fd0072-2b88-478d-8b52-4ab9b2089e86}TMRA Equipo',
+      null
+    )
+  )
+)
