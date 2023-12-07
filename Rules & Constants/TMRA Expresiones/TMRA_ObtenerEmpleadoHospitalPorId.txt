@@ -1,0 +1,24 @@
+/* Devuelve el empleado con el ID (que no el numero de empleado) pasado como rule input. */
+
+if(
+  a!isNullOrEmpty(ri!id),
+  null,
+a!queryRecordType(
+  recordType: 'recordType!{02acd5dc-7ec9-4237-8e90-70914889db6f}TMRA Empleado Hospital',
+  fields: {},
+  filters: a!queryLogicalExpression(
+    operator: "AND",
+    filters: {
+      a!queryFilter(
+        field: 'recordType!{02acd5dc-7ec9-4237-8e90-70914889db6f}TMRA Empleado Hospital.fields.{52d32962-fe40-4d87-980e-1afa16a3471a}id',
+        operator: "=",
+        value: ri!id
+      )
+    },
+    ignoreFiltersWithEmptyValues: true
+  ),
+  pagingInfo: a!pagingInfo(
+    startIndex: 1,
+    batchSize: 100
+  )
+).data)

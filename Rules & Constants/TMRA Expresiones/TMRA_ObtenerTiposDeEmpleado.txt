@@ -1,0 +1,9 @@
+/* Devuelve una lista de TMRA Tipo Empleado */
+a!queryRecordType(
+  recordType: 'recordType!{25b499b3-3d5e-404f-bd9d-4197173b339b}TMRA Tipo Empleado',
+  fields: {},
+  pagingInfo: a!pagingInfo(
+    startIndex: 1,
+    batchSize: 100
+  )
+).data

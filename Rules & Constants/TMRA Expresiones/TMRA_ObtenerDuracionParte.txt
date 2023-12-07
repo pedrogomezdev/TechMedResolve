@@ -1,0 +1,33 @@
+/* Devuelve el número de horas de duración de un parte. */
+
+a!localVariables(
+  local!query: a!queryRecordType(
+    recordType: 'recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte',
+    fields: {},
+    filters: a!queryLogicalExpression(
+      operator: "AND",
+      filters: {
+        a!queryFilter(
+          field: 'recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{c4c6b859-138f-4146-8775-586a8e85670d}ordenTrabajoFk',
+          operator: "=",
+          value: ri!ordenTrabajo
+        )
+      },
+      ignoreFiltersWithEmptyValues: true
+    ),
+    pagingInfo: a!pagingInfo(startIndex: 1, batchSize: 100)
+  ).data['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{75f5ffea-b9eb-4cbc-941b-9bf2c4c72633}horasTrabajadas'],
+  if(
+    condition: or(
+      a!isNullOrEmpty(ri!ordenTrabajo),
+      not(rule!TMRA_ExisteParte(ri!ordenTrabajo))
+    ),
+    valueIfTrue: 0,
+    valueIfFalse: sum(
+      a!forEach(
+        items: local!query,
+        expression: if(a!isNullOrEmpty(fv!item), 0, fv!item)
+      )
+    )
+  )
+)

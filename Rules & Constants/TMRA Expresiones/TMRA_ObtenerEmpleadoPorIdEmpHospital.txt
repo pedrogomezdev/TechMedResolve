@@ -1,0 +1,31 @@
+/* Devuelve un record de tipo Empleado con la información de un empleado del hospital (siempre que el id pasado como rule input se corresponda con algún empleado del hospital).
+
+*/
+
+if(
+  a!isNullOrEmpty(ri!idEmpHospital),
+  null,
+  index(
+    a!queryRecordType(
+      recordType: 'recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado',
+      fields: {},
+      filters: a!queryLogicalExpression(
+        operator: "AND",
+        filters: {
+          a!queryFilter(
+            field: 'recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.relationships.{08cb664f-8792-4a89-8091-b5796f182038}tmraEmpleadoHospital.fields.{52d32962-fe40-4d87-980e-1afa16a3471a}id',
+            operator: "=",
+            value: ri!idEmpHospital
+          )
+        },
+        ignoreFiltersWithEmptyValues: true
+      ),
+      pagingInfo: a!pagingInfo(startIndex: 1, batchSize: 100)
+    ).data,
+    1,
+    cast(
+      'recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado',
+      null
+    )
+  )
+)

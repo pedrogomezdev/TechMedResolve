@@ -1,0 +1,19 @@
+/* Query process analytics que obtiene las tareas del usuario loggeado actualmente en el sistema del proceso de gestion de incidencias.*/
+a!queryProcessAnalytics(
+  report: cons!TMRA_TAREAS_GESTION_PARTE,
+  contextProcessModels: cons!TMRA_GESTION_DE_INCIDENCIA,
+  
+  query: a!query(
+    filter: {
+      a!queryFilter(
+        field: "c5",
+        operator: "=",
+        value: user(loggedInUser(), "username")
+        
+      )
+    },
+    pagingInfo: a!pagingInfo(startIndex: 1, batchSize: - 1)
+  )
+  
+  
+),

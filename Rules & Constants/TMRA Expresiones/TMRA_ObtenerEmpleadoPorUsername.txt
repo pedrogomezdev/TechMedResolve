@@ -1,0 +1,31 @@
+/*Devuelve el empleado en BBDD que tiene el username pasado como rule input.*/
+
+if(
+  a!isNullOrEmpty(ri!username),
+  null,
+  a!queryRecordType(
+    recordType: 'recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado',
+    fields: {},
+    filters: a!queryLogicalExpression(
+      operator: "AND",
+      filters: {
+        a!queryFilter(
+          field: 'recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{0a480160-e081-42f0-8bda-05e9c49d78c2}estaActivo',
+          operator: "=",
+          value: true
+        ),
+        a!queryFilter(
+          field: 'recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{2f088b8a-2ded-486d-b775-13240c790be6}username',
+          operator: "=",
+          value: ri!username
+        )
+      },
+      ignoreFiltersWithEmptyValues: true
+    ),
+    pagingInfo: a!pagingInfo(
+      startIndex: 1,
+      batchSize: 100
+    )
+  ).data
+
+)

@@ -1,0 +1,29 @@
+/* Devuelve los datos del empleado con el id de técnico pasado como rule input. */
+
+if(
+  a!isNullOrEmpty(ri!idTecnico),
+  null,
+  index(
+    a!queryRecordType(
+      recordType: 'recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado',
+      fields: {},
+      filters: a!queryLogicalExpression(
+        operator: "AND",
+        filters: {
+          a!queryFilter(
+            field: 'recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.relationships.{79f709c3-d4d4-440c-b0d9-9f15b3934603}tmraTecnico.fields.{8aa19895-e18a-4667-97f6-dcf2a51293ec}id',
+            operator: "=",
+            value: ri!idTecnico
+          )
+        },
+        ignoreFiltersWithEmptyValues: true
+      ),
+      pagingInfo: a!pagingInfo(startIndex: 1, batchSize: 100)
+    ).data,
+    1,
+    cast(
+      'recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado',
+      null
+    )
+  )
+)

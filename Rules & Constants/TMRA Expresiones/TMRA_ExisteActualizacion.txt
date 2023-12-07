@@ -1,0 +1,36 @@
+/* Devuelve true si existe una actualización de un parte con el id introducido como rule input. */
+a!localVariables(
+  local!query: a!queryRecordType(
+    recordType: 'recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte',
+    fields: {
+      'recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{0300417e-7432-4c92-9d98-d23c28da6b41}id'
+    },
+    filters: a!queryLogicalExpression(
+      operator: "AND",
+      filters: {
+        a!queryFilter(
+          field: 'recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{0300417e-7432-4c92-9d98-d23c28da6b41}id',
+          operator: "=",
+          value: ri!idActualizacion
+        )
+      },
+      ignoreFiltersWithEmptyValues: true
+    ),
+    pagingInfo: a!pagingInfo(
+      startIndex: 1,
+      batchSize: 100
+    )
+  ).data,
+  
+  if(
+    condition: a!isNotNullOrEmpty(ri!idActualizacion),
+    valueIfTrue: if(
+      condition: a!isNotNullOrEmpty(local!query),
+      valueIfTrue: true,
+      valueIfFalse: false
+    ),
+    valueIfFalse: false
+    
+  )
+  
+)

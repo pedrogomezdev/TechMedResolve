@@ -1,0 +1,30 @@
+/* Devuelve todos los partes con el estado pasado por rule input.
+
+*/
+
+
+if(
+  a!isNullOrEmpty(ri!estado),
+  null,
+  a!queryRecordType(
+    recordType: 'recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte',
+    fields: {},
+    filters: a!queryLogicalExpression(
+      operator: "AND",
+      filters: {
+        a!queryFilter(
+          field: 'recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado',
+          operator: "=",
+          value: ri!estado
+        ),
+        a!queryFilter(
+          field: 'recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{61f4dfe9-5709-4e04-a5cb-6fa4aa39a167}estaActivo',
+          operator: "=",
+          value: true
+        )
+      },
+      ignoreFiltersWithEmptyValues: true
+    ),
+    pagingInfo: a!pagingInfo(startIndex: 1, batchSize: 100)
+  ).data
+)

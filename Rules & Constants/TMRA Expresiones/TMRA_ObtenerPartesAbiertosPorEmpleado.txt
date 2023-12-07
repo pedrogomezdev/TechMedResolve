@@ -1,0 +1,30 @@
+/* Devuelve una lista con los partes abiertos por el empleado cuyo número de empleado es pasado como rule input.
+
+*/
+
+if(
+  a!isNullOrEmpty(ri!numeroEmpleado),
+  null,
+  a!queryRecordType(
+    recordType: 'recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte',
+    fields: {},
+    filters: a!queryLogicalExpression(
+      operator: "AND",
+      filters: {
+        a!queryFilter(
+          field: 'recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.relationships.{eae2fdc2-e703-44b1-b2d1-c6470a394130}tmraEmpleadoHospital.relationships.{8a4c3f69-cc1d-41db-9fd6-2763091c3ded}tmraEmpleado.fields.{07e5897a-ae7d-47fe-b477-ec0d777c3fa5}nEmpleado',
+          operator: "=",
+          value: ri!numeroEmpleado
+        ),
+        a!queryFilter(
+          field: 'recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{61f4dfe9-5709-4e04-a5cb-6fa4aa39a167}estaActivo',
+          operator: "=",
+          value: true
+        )
+      },
+      ignoreFiltersWithEmptyValues: true
+    ),
+    pagingInfo: a!pagingInfo(startIndex: 1, batchSize: 100)
+  ).data,
+
+)

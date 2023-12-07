@@ -1,0 +1,21 @@
+/* Devuelve la máquina con el id pasado como rule input. */ 
+if(
+  a!isNullOrEmpty(ri!id),
+  null,
+  index(
+    a!queryRecordType(
+      recordType: 'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina',
+      pagingInfo: a!pagingInfo(startIndex: 1, batchSize: 1),
+      filters: a!queryFilter(
+        field: 'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{8db038c9-7580-4006-926a-55d3767f2c71}id',
+        operator: "=",
+        value: ri!id
+      )
+    ).data,
+    1,
+    cast(
+      'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina',
+      null
+    )
+  )
+)

@@ -1,0 +1,19 @@
+/* Indica si el usuario cuyo username es pasado por parámetro existe, si está desactivado o si no existe.
+
+*/
+
+if(
+  
+  a!isNotNullOrEmpty(ri!username), /* Si el username no es nulo o viene vacío */
+  
+  if(
+    not(isusernametaken(ri!username)), /* Si el nombre de usuario no se ha usado. */
+    cons!TMRA_ESTADOS_USUARIOS_APPIAN[1], /* Devuelve "libre" */
+    if( /* Si existe, si el estado del usuario indica que  está inactivo, devolverá "desactivado"*/
+      user(ri!username, "status") = 0,
+      cons!TMRA_ESTADOS_USUARIOS_APPIAN[2],
+      cons!TMRA_ESTADOS_USUARIOS_APPIAN[3] /* Si existe y no está inactivo, devolverá "ocupado"*/
+    )
+  ),
+  null, /* Si el username llega nulo o vacío nos devuelve un null */ 
+)

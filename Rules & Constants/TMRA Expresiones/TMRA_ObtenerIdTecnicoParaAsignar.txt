@@ -1,0 +1,39 @@
+/* Devuelve el id del técnico al que asignar un parte */
+a!localVariables(
+
+  /* Devuelve todos los IDs de todoslos técnicos activos ordenados por número de partes asignados de menor a mayor*/
+  local!tecnicos: a!queryRecordType(
+    recordType: 'recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico',
+    fields: {
+      'recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.fields.{8aa19895-e18a-4667-97f6-dcf2a51293ec}id'
+    },
+    filters: a!queryLogicalExpression(
+      operator: "AND",
+      filters: {
+        a!queryFilter(
+          field: 'recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.fields.{d961fe36-c255-4e3f-be93-fb04c323e216}estaActivo',
+          operator: "=",
+          value: true
+        )
+      },
+      ignoreFiltersWithEmptyValues: true
+    ),
+    pagingInfo: a!pagingInfo(
+      startIndex: 1,
+      batchSize: 100,
+      sort: {
+        a!sortInfo(
+          field: 'recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.fields.{4652a911-84af-470e-bf51-8432ea2739c6}npartesasignados',
+          ascending: true
+        )
+      }
+    )
+  ).data['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.fields.{8aa19895-e18a-4667-97f6-dcf2a51293ec}id'],
+  
+  /* Como el primero de todos será el que menos partes tiene asignados, se elige a ese técnico.*/
+  local!tecnicos[1]
+  
+
+  
+  
+)

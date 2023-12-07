@@ -1,0 +1,2 @@
+/* Devuelve el precio en euros de un parte de reparación. */
+(ri!precioHora * ri!duracion) +  ri!gastosExtra 

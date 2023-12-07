@@ -1,0 +1,56 @@
+/* Devuelve una lista con todos los números de serie de las máquinas activas con el estado "Operativo" con el nombre, marca y modelo pasados como rule inputs. */
+
+a!localVariables(
+  local!query: a!queryRecordType(
+    recordType: 'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina',
+    fields: {
+      'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{56f17aea-a4d7-4a7b-a518-ee01cc73eb9e}nSerie'
+    },
+    filters: a!queryLogicalExpression(
+      operator: "AND",
+      filters: {
+        a!queryFilter(
+          field: 'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{49395354-b59c-4d48-8cb7-b2bd1c740f8c}nombre',
+          operator: "=",
+          value: ri!nombreMaquina
+        ),
+        a!queryFilter(
+          field: 'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{f7745e36-998c-4218-8b50-0f76f12145ba}marca',
+          operator: "=",
+          value: ri!marcaMaquina
+        ),
+        a!queryFilter(
+          field: 'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{4042bdf5-9551-4b97-8cf1-9fa7475ff423}modelo',
+          operator: "=",
+          value: ri!modeloMaquina
+        ),
+        a!queryFilter(
+          field: 'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{9c3dcc4c-1e1c-486b-b14a-89ee2f5b54f5}estaActivo',
+          operator: "=",
+          value: true
+        ),
+
+        a!queryFilter(
+          field: 'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{fff97e62-ff27-415c-94c1-af562404ecb8}estado',
+          operator: "=",
+          value: cons!TMRA_ESTADOS_MAQUINAS[1]
+        )
+      },
+      ignoreFiltersWithEmptyValues: true
+    ),
+    pagingInfo: a!pagingInfo(
+      startIndex: 1,
+      batchSize: 100
+    )
+  ).data['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{56f17aea-a4d7-4a7b-a518-ee01cc73eb9e}nSerie'],
+
+  if(
+    condition: a!isNullOrEmpty(local!query),
+    valueIfTrue: "-- No hay máquinas --",
+    valueIfFalse: if(
+      condition: or({a!isNullOrEmpty(ri!modeloMaquina), a!isNullOrEmpty(ri!marcaMaquina), a!isNullOrEmpty(ri!nombreMaquina)}),
+      valueIfTrue: "-- No hay máquinas -- ",
+      valueIfFalse: union(local!query, local!query)
+    )
+  )
+)

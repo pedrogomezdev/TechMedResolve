@@ -1,0 +1,43 @@
+/* Devuelve el tipo de pantalla que se está utilizando. */
+
+a!localVariables(
+  /* 
+  Almacenamos una lista de booleanos en la que mediante la funcion isPageWidth(), 
+  se comprobará si el tipo de ancho de pantalla se corresponde con los tipos de ancho de appian.
+  Las comprobaciones se hacen en el mismo orden en el que están almacenados
+  los valores posibles en la constante cons!TMRA_TIPOS_PANTALLA
+  
+  Como es imposible que se esté viendo en dos pantallas al mismo tiempo,
+  sólo devolverá true el indice correspondiente al tipo de pantalla que 
+  se está utilizando.
+  
+  */
+  local!listaPantallas: {
+    a!isPageWidth("PHONE"),
+    a!isPageWidth("TABLET_PORTRAIT"),
+    a!isPageWidth("TABLET_LANDSCAPE"),
+    a!isPageWidth("DESKTOP_NARROW"),
+    a!isPageWidth("DESKTOP"),
+    a!isPageWidth("DESKTOP_WIDE")
+  },
+  
+  /* 
+    Iteramos la lista local!listaPantallas, y una vez que el elemento iterado sea true, 
+    devuelve el elemento de la constante de tipos de pantalla correspondiente
+    al indice del elemento iterado. Por lo tanto, se devuelve
+    */
+  local!listaBooleanos:  a!forEach(
+    items: local!listaPantallas,
+    expression: if(fv!item, cons!TMRA_TIPOS_PANTALLA[fv!index], {})
+  ),
+  
+  /* Con index, obtenemos el elemento que deseemos de la lista que le pasemos por parámetro.*/
+  index(
+    local!listaBooleanos,
+    1,
+    {}
+  )
+)
+
+
+

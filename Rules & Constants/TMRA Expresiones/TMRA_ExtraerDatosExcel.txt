@@ -1,0 +1,41 @@
+/* Devuelve una lista de máquinas extraidas de la lectura de la plantilla de excel cumplimentada. Si se sube vacía, devolverá un null.*/
+a!localVariables(
+  local!excel: readexcelsheet(
+    excelDocument: ri!excel,
+    sheetNumber: 0,
+    startRow: 2,
+    numberOfColumns: 7,
+    rejectNullAndColumns: true()
+  ),
+  
+  local!data: local!excel.result,
+  
+  local!record: a!forEach(
+    items: local!data,
+    expression: 
+    
+    if(
+      or(
+        a!isNotNullOrEmpty(fv!item.values[1]),
+        a!isNotNullOrEmpty(fv!item.values[2]),
+        a!isNotNullOrEmpty(fv!item.values[3]),
+        a!isNotNullOrEmpty(fv!item.values[4]),
+        a!isNotNullOrEmpty(fv!item.values[5])
+      ),
+      
+      
+      'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina'(
+        'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{49395354-b59c-4d48-8cb7-b2bd1c740f8c}nombre': fv!item.values[1],
+        'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{fff97e62-ff27-415c-94c1-af562404ecb8}estado': fv!item.values[2],
+        'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{f7745e36-998c-4218-8b50-0f76f12145ba}marca': fv!item.values[3],
+        'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{4042bdf5-9551-4b97-8cf1-9fa7475ff423}modelo': fv!item.values[4],
+        'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{56f17aea-a4d7-4a7b-a518-ee01cc73eb9e}nSerie': fv!item.values[5],
+        'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{62fdac29-befa-41a5-b866-8694fddb311d}descripcion': fv!item.values[6],
+        'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{7ce9192e-9227-40ef-ab7b-23e89f4db302}notasAdicionales': fv!item.values[7],
+      ),
+      {}
+    )
+  ),
+  
+  local!record
+)
