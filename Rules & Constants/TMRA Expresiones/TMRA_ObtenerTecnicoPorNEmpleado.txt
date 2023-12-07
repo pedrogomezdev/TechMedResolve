@@ -1,0 +1,30 @@
+/* Devuelve el TMR Tecnico por el número de empleado introducido como rule input */
+if(
+  a!isNullOrEmpty(ri!nEmpleado),
+  null,
+  index(
+    a!queryRecordType(
+      recordType: 'recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico',
+      fields: {
+        'recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.relationships.{68cb95cc-f63f-4d1a-b290-8d30e056c923}tmraEmpleado'
+      },
+      filters: a!queryLogicalExpression(
+        operator: "AND",
+        filters: {
+          a!queryFilter(
+            field: 'recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.fields.{bc1f1de6-d1ac-40f9-b166-4836287852bc}nEmpleadoFk',
+            operator: "=",
+            value: ri!nEmpleado
+          )
+        },
+        ignoreFiltersWithEmptyValues: true
+      ),
+      pagingInfo: a!pagingInfo(startIndex: 1, batchSize: 100)
+    ).data,
+    1,
+    cast(
+      'recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico',
+      null
+    )
+  )
+)

@@ -1,3 +1,5 @@
+/* Descripcion: Devuelve el equipo con la id introducida por rule input*/
+
 /* Si el id del equipo llega vacío, nos devolverá nulo, si no, nos devolverá el record del equipo que se corresponda con el id pasado por rule input*/
 if(
   a!isNullOrEmpty(ri!idEquipo),

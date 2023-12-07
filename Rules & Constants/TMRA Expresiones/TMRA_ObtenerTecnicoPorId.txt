@@ -1,0 +1,29 @@
+/* Descripción: Devuelve el técnico con el id pasado como rule input.*/
+
+if(
+  a!isNullOrEmpty(ri!id),
+  null,
+  index(
+    a!queryRecordType(
+      recordType: 'recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico',
+      fields: {},
+      filters: a!queryLogicalExpression(
+        operator: "AND",
+        filters: {
+          a!queryFilter(
+            field: 'recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.fields.{8aa19895-e18a-4667-97f6-dcf2a51293ec}id',
+            operator: "=",
+            value: ri!id
+          )
+        },
+        ignoreFiltersWithEmptyValues: true
+      ),
+      pagingInfo: a!pagingInfo(startIndex: 1, batchSize: 100)
+    ).data,
+    1,
+    cast(
+      'recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico',
+      null
+    )
+  )
+)

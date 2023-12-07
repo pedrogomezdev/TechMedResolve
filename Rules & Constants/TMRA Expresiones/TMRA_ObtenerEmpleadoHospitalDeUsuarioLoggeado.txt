@@ -1,0 +1,33 @@
+/* Descripción: Devuelve el record del empleado del hospital que se corresponde con el usuario loggeado. */
+
+a!localVariables(
+  local!query: a!queryRecordType(
+    recordType: 'recordType!{02acd5dc-7ec9-4237-8e90-70914889db6f}TMRA Empleado Hospital',
+    fields: {},
+    filters: a!queryLogicalExpression(
+      operator: "AND",
+      filters: {
+        a!queryFilter(
+          field: 'recordType!{02acd5dc-7ec9-4237-8e90-70914889db6f}TMRA Empleado Hospital.relationships.{8a4c3f69-cc1d-41db-9fd6-2763091c3ded}tmraEmpleado.fields.{2f088b8a-2ded-486d-b775-13240c790be6}username',
+          operator: "=",
+          value: user(loggedInUser(), "username")
+        )
+      },
+      ignoreFiltersWithEmptyValues: true
+    ),
+    pagingInfo: a!pagingInfo(
+      startIndex: 1,
+      batchSize: 100
+    )
+  ).data,
+  
+  
+  if(
+    condition: a!isNullOrEmpty(local!query),
+    valueIfTrue: null,
+    valueIfFalse: local!query[1]
+  )
+  
+)
+
+

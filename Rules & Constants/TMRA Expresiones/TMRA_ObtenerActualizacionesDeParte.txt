@@ -1,0 +1,33 @@
+/* Descripción: Devuelve true si existe en BBDD el parte con la orden de trabajo pasada por rule input. */
+
+if(
+  a!isNullOrEmpty(ri!ordenTrabajo),
+  null,
+  
+    a!queryRecordType(
+      recordType: 'recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte',
+      fields: {
+        'recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.relationships.{65232d99-3a81-40b9-b545-9f40cab7a1a0}tmraTecnicoRealizaActualizacion.relationships.{98e64bb6-59bf-4db8-b87d-ed40c84df022}tmraTecnico.relationships.{68cb95cc-f63f-4d1a-b290-8d30e056c923}tmraEmpleado.fields.{ea49ffaf-1db8-45a1-aa54-54fa8f543fd0}nombre',
+        'recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.relationships.{65232d99-3a81-40b9-b545-9f40cab7a1a0}tmraTecnicoRealizaActualizacion.relationships.{98e64bb6-59bf-4db8-b87d-ed40c84df022}tmraTecnico.relationships.{68cb95cc-f63f-4d1a-b290-8d30e056c923}tmraEmpleado.fields.{a3d16573-1c20-4967-816e-7796933eb5ba}primerApellido',
+        'recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.relationships.{65232d99-3a81-40b9-b545-9f40cab7a1a0}tmraTecnicoRealizaActualizacion.relationships.{98e64bb6-59bf-4db8-b87d-ed40c84df022}tmraTecnico.relationships.{68cb95cc-f63f-4d1a-b290-8d30e056c923}tmraEmpleado.fields.{80d68571-ab99-43b4-9948-8228ee24a7d9}segundoApellido',
+        'recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{c5711d2b-c64c-4410-8081-2fe6a640070c}comentario',
+        'recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{d9374b0e-f6d8-4be2-9978-cd21fbe061e6}fecha',
+        'recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{75f5ffea-b9eb-4cbc-941b-9bf2c4c72633}horasTrabajadas'
+      },
+      filters: a!queryLogicalExpression(
+        operator: "AND",
+        filters: {
+          a!queryFilter(
+            field: 'recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{c4c6b859-138f-4146-8775-586a8e85670d}ordenTrabajoFk',
+            operator: "=",
+            value: ri!ordenTrabajo
+          )
+        },
+        ignoreFiltersWithEmptyValues: true
+      ),
+      pagingInfo: a!pagingInfo(
+        startIndex: 1,
+        batchSize: 100
+      )
+    ).data
+)

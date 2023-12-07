@@ -1,0 +1,37 @@
+/* Descripción: Devuelve true si el parte cuya orden de trabajo pasada como rule input existe en base de datos y false si no existe.
+
+*/
+
+a!localVariables(
+  local!query: a!queryRecordType(
+    recordType: 'recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte',
+    fields: {
+      'recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{3f384ff0-002a-471a-bb0c-14a42ade735d}ordenTrabajo'
+    },
+    filters: a!queryLogicalExpression(
+      operator: "AND",
+      filters: {
+        a!queryFilter(
+          field: 'recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{3f384ff0-002a-471a-bb0c-14a42ade735d}ordenTrabajo',
+          operator: "=",
+          value: ri!ordenTrabajo
+        )
+      },
+      ignoreFiltersWithEmptyValues: true
+    ),
+    pagingInfo: a!pagingInfo(
+      startIndex: 1,
+      batchSize: 100
+    )
+  ).data,
+  
+  if(
+    condition: a!isNullOrEmpty(ri!ordenTrabajo),
+    valueIfTrue: false,
+    valueIfFalse: if(
+      condition: a!isNotNullOrEmpty(local!query),
+      valueIfTrue: true,
+      valueIfFalse: false
+    )
+  )
+)

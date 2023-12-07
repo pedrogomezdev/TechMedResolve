@@ -1,0 +1,32 @@
+/* Descripción: Devuelve el TMR Empleado con el número de empleado pasado por parámetro. */
+
+if(
+  a!isNullOrEmpty(ri!nEmpleado),
+  null,
+  index(
+    a!queryRecordType(
+      recordType: 'recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado',
+      fields: {},
+      filters: a!queryLogicalExpression(
+        operator: "AND",
+        filters: {
+          a!queryFilter(
+            field: 'recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{07e5897a-ae7d-47fe-b477-ec0d777c3fa5}nEmpleado',
+            operator: "=",
+            value: ri!nEmpleado
+          )
+        },
+        ignoreFiltersWithEmptyValues: true
+      ),
+      pagingInfo: a!pagingInfo(
+        startIndex: 1,
+        batchSize: 100
+      )
+    ).data,
+    1,
+    cast(
+      'recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado',
+      null
+    )
+  )
+)

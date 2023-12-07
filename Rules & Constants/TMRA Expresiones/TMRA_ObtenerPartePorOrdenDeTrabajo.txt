@@ -1,0 +1,29 @@
+/* Descripción: Devuelve el parte con la orden de trabajo pasada por rule input. */
+
+if(
+  a!isNullOrEmpty(ri!ordenDeTrabajo),
+  null,
+  index(
+    a!queryRecordType(
+      recordType: 'recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte',
+      fields: {},
+      filters: a!queryLogicalExpression(
+        operator: "AND",
+        filters: {
+          a!queryFilter(
+            field: 'recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{3f384ff0-002a-471a-bb0c-14a42ade735d}ordenTrabajo',
+            operator: "=",
+            value: ri!ordenDeTrabajo
+          )
+        },
+        ignoreFiltersWithEmptyValues: true
+      ),
+      pagingInfo: a!pagingInfo(startIndex: 1, batchSize: 100)
+    ).data,
+    1,
+    cast(
+      'recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte',
+      null
+    )
+  )
+)
