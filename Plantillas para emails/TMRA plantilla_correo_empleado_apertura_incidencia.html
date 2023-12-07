@@ -1,0 +1,59 @@
+<!-- 
+
+Esta es la plantilla html y CSS adjuntada en el nodo de envío de email al empleado que abre una incidencia para indicarle que lo ha hecho correctamente.
+
+cuando hay un texto entre tres símbolos de almohadilla quiere decir que lo que está dentro es un parámetro cuyo valor será dado desde appian.
+
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificación de Incidencia Abierta</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #007bff;
+            color: #ffffff;
+            text-align: center;
+            padding: 10px;
+        }
+        .content {
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Notificación de Incidencia Abierta</h1>
+        </div>
+        <div class="content">
+            <p>Hola ###nombre_empleado###,</p>
+            <p>Queremos informarte de que la incidencia que has abierto sobre el equipo ###maquina### ###marca### ####modelo### con número de serie ###numero de serie### ha sido registrada correctamente en nuestro sistema y se le ha asignado la orden de trabajo Nº###Orden de trabajo###.</p>
+            <p>Estamos trabajando en resolverla y te mantendremos informado sobre cualquier progreso.</p>
+            <p>Si tienes alguna pregunta adicional, no dudes en ponerte en contacto con nuestro equipo de soporte.</p>
+            <p>Gracias por tu colaboración.</p>
+        </div>
+        <div class="footer">
+            <p>Este es un mensaje automático. Por favor, no respondas a este correo.</p>
+        </div>
+    </div>
+</body>
+</html>

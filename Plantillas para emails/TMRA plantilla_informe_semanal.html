@@ -1,0 +1,96 @@
+<!-- 
+
+Esta es la plantilla html y CSS adjuntada en el nodo de envío de email a los supervisores para el envío del informe semanal.
+
+cuando hay un texto entre tres símbolos de almohadilla quiere decir que lo que está dentro es un parámetro cuyo valor será dado desde appian.
+
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+  }
+  .container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  th {
+    background-color: #f2f2f2;
+  }
+</style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Informe Semanal - Estado de Incidencias y Equipos</h1>
+	<p>Buenas tardes ###nombre supervisor###, a continuación se muestra el informe del estado de las incidencias y los equipos de la última semana:</p>
+    <table>
+      <tr>
+        <th></th>
+        <th>Número</th>
+      </tr>
+      <tr>
+        <td>Incidencias Abiertas</td>
+        <td>###incidencias abiertas###</td>
+      </tr>
+      <tr>
+        <td>Incidencias Resueltas</td>
+        <td>###incidencias resueltas###</td>
+      </tr>
+      <tr>
+        <td>Incidencias en Curso</td>
+        <td>###incidencias en curso###</td>
+      </tr>
+      <tr>
+        <td>Incidencias en Suspensión</td>
+        <td>###incidencias en suspension###</td>
+      </tr>
+      <tr>
+        <td>Incidencias Cerradas con Problemas</td>
+        <td>###incidencias cerradas con problemas###</td>
+      </tr>
+      <tr>
+        <td>Máquinas Operativas</td>
+        <td>###Máquinas operativas###</td>
+      </tr>
+      <tr>
+        <td>Máquinas en Reparación</td>
+        <td>###Máquinas en reparacion###</td>
+      </tr>
+      <tr>
+        <td>Máquinas Fuera de Servicio</td>
+        <td>###Máquinas fuera de servicio###</td>
+      </tr>
+      <tr>
+        <td>Máquinas Dadas de Baja</td>
+        <td>###Máquinas dadas de baja###</td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>
