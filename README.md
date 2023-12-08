@@ -27,3 +27,10 @@ Este repositorio contiene los componentes esenciales del proyecto, organizados e
 
 - **Código:** Incluye el código de las Expression Rules y las interfaces de la aplicación. Dado que el proyecto se desarrolló en una versión de aprendizaje de Appian que no permite la exportación completa, aquí encontrarás los elementos esenciales para entender la lógica de la aplicación.
 
+## Visualización correcta del código
+
+Al ser código propio de Appian, las Expression Rules e Interfaces, se visualizarán no tienen una extensión con la que poder serguardadas, por lo que son archivos de texto plano. Para facilitar la visualización del código y su comprensión, se recomienda encarecidamente clonar este repositorio y abrir el código mediante la aplicación **Notepad++** teniendo previamente 
+instalado el siguiente plugin (requiere registro en Appian Community):
+
+https://community.appian.com/b/appmarket/posts/notepad-user-defined-language-forappia
+
