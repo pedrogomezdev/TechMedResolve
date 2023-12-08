@@ -19,7 +19,7 @@ Está compuesta de 3 “sub-aplicaciones”:
 
 Además de lo anterior, se han desarrollado una serie de automatismos que permiten el envío de informes vía email cuando ocurren determinados eventos. También se ha incorporado un sistema de mensajería que permite la comunicación entre los diferentes equipos y que está disponible en las tres aplicaciones. 
 
-## Explicación del repositorio 📋
+## Estructura del repositorio 📋
 
 Este repositorio contiene los componentes esenciales del proyecto, organizados en los siguientes directorios:
 
