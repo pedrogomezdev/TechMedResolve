@@ -1,0 +1,196 @@
+/* Gráfico de las máquinas por estado */
+
+a!localVariables(
+  local!maquinaSeleccionada,
+  local!mostrarMaquina: false,
+  local!maquina,
+  if(
+    not(local!mostrarMaquina),
+    {
+      a!pieChartField(
+        data: a!recordData(
+          recordType: 'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina',
+          filters: a!queryLogicalExpression(
+            operator: "AND",
+            filters: {
+              a!queryFilter(
+                field: 'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{9c3dcc4c-1e1c-486b-b14a-89ee2f5b54f5}estaActivo',
+                operator: "=",
+                value: true
+              )
+            },
+            ignoreFiltersWithEmptyValues: true
+          )
+        ),
+        config: a!pieChartConfig(
+          primaryGrouping: a!grouping(
+            field: 'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{fff97e62-ff27-415c-94c1-af562404ecb8}estado',
+            alias: "estadoMaquina"
+          ),
+          measures: a!measure(
+            function: "COUNT",
+            field: 'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{8db038c9-7580-4006-926a-55d3767f2c71}id',
+            alias: "medida_cuenta_idMaquina"
+          ),
+
+          link: a!dynamicLink(
+            value: fv!selection.estadoMaquina,
+            saveInto: local!maquinaSeleccionada
+          )
+        ),
+        label: "Máquinas por estado",
+        instructions: "Para ver la lista de máquinas operativas/en reparación/fuera de servicio/dadas de baja, haz  clic en la correspondiente sección del gráfico",
+        showDataLabels: true,
+        showTooltips: true,
+        showAsPercentage: true,
+        showWhen: a!isNullOrEmpty(local!maquinaSeleccionada),
+        colorScheme: "MOSS",
+        style: "PIE"
+      ),
+      a!sideBySideLayout(
+        items: {
+          a!sideBySideItem(
+            item: a!richTextDisplayField(
+              label: "Rich Text",
+              labelPosition: "COLLAPSED",
+              value: {
+                a!richTextIcon(icon: "long-arrow-left", color: "#3d85c6")
+              },
+              align: "RIGHT"
+            ),
+            width: "MINIMIZE"
+          ),
+          a!sideBySideItem(
+
+            item: a!linkField(
+              labelPosition: "COLLAPSED",
+              links: a!dynamicLink(
+                label: "Volver al gráfico",
+                value: null,
+                saveInto: local!maquinaSeleccionada
+              )
+            )
+          )
+        },
+        /*Only shows when local!selectedVehicleStatus is not null or empty*/
+        showWhen: a!isNotNullOrEmpty(local!maquinaSeleccionada),
+        spacing: "DENSE"
+      ),
+      a!gridField_23r3(
+        label: "Máquinas con estado " & local!maquinaSeleccionada,
+        labelPosition: "ABOVE",
+        data: a!recordData(
+          recordType: 'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina',
+          filters: a!queryLogicalExpression(
+            operator: "AND",
+            filters: {
+              a!queryFilter(
+                field: 'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{fff97e62-ff27-415c-94c1-af562404ecb8}estado',
+                operator: "=",
+                value: local!maquinaSeleccionada
+              ),
+              a!queryFilter(
+                field: 'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{9c3dcc4c-1e1c-486b-b14a-89ee2f5b54f5}estaActivo',
+                operator: "=",
+                value: true
+              )
+
+            },
+            ignoreFiltersWithEmptyValues: true
+          )
+        ),
+        columns: {
+          a!gridColumn(
+            label: "ID",
+            sortField: 'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{8db038c9-7580-4006-926a-55d3767f2c71}id',
+            value: a!linkField(
+              links: {
+                a!dynamicLink(
+                  label: fv!row['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{8db038c9-7580-4006-926a-55d3767f2c71}id'],
+                  value: fv!row,
+                  saveInto: {
+                    local!maquina,
+                    a!save(local!mostrarMaquina, true)
+                  }
+                )
+
+              }
+            )
+          ),
+          a!gridColumn(
+            label: "Nombre",
+            sortField: 'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{49395354-b59c-4d48-8cb7-b2bd1c740f8c}nombre',
+            value: fv!row['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{49395354-b59c-4d48-8cb7-b2bd1c740f8c}nombre'],
+            align: "START"
+          ),
+          a!gridColumn(
+            label: "Marca",
+            sortField: 'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{f7745e36-998c-4218-8b50-0f76f12145ba}marca',
+            value: fv!row['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{f7745e36-998c-4218-8b50-0f76f12145ba}marca']
+          ),
+          a!gridColumn(
+            label: "Modelo",
+            sortField: 'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{4042bdf5-9551-4b97-8cf1-9fa7475ff423}modelo',
+            value: fv!row['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{4042bdf5-9551-4b97-8cf1-9fa7475ff423}modelo']
+          ),
+          a!gridColumn(
+            label: "Nº de serie",
+            sortField: 'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{56f17aea-a4d7-4a7b-a518-ee01cc73eb9e}nSerie',
+            value: fv!row['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{56f17aea-a4d7-4a7b-a518-ee01cc73eb9e}nSerie']
+          )
+
+        },
+
+        showWhen: a!isNotNullOrEmpty(local!maquinaSeleccionada),
+        spacing: "DENSE",
+        refreshAfter: "RECORD_ACTION",
+        showSearchBox: false,
+        showRefreshButton: false,
+        recordActions: {}
+      )
+
+
+      
+    },
+    
+    a!sectionLayout(
+      contents: {
+        rule!TMRA_CabeceraInformacionMaquina(local!maquina),
+        a!sectionLayout( contents: {rule!TMRA_InformacionMaquinaSummary(
+          maquina: local!maquina
+        ),
+        a!buttonArrayLayout(
+          buttons: { 
+            a!buttonWidget_23r3(
+              label: "Volver", 
+              value: false,
+              saveInto: local!mostrarMaquina
+            ) },
+            align: "CENTER"
+        )},marginAbove: "STANDARD")
+        
+      }
+    )
+    /*a!headerContentLayout(*/
+      /*header: {*/
+        /*rule!TMRA_CabeceraInformacionMaquina(local!maquina)*/
+      /*},*/
+      /*contents: {*/
+        /*rule!TMRA_InformacionMaquinaSummary(*/
+          /*maquina: local!maquina*/
+        /*),*/
+        /*a!buttonArrayLayout(*/
+          /*buttons: { */
+            /*a!buttonWidget(*/
+              /*label: "Volver", */
+              /*value: false,*/
+              /*saveInto: local!mostrarMaquina*/
+            /*) },*/
+            /*align: "CENTER"*/
+        /*)*/
+      /*}*/
+    /*)*/
+    
+  )
+  
+)

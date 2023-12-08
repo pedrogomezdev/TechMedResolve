@@ -1,0 +1,157 @@
+
+
+/* Interfaz con la información del técnico para el Summary View del Técnico */
+
+a!sectionLayout(
+  label: "",
+  contents: {
+    a!sectionLayout(
+      label: " Información del técnico",
+      labelIcon: "info-circle",
+      contents: {
+        a!sideBySideLayout(
+          items: {
+            a!sideBySideItem(
+              item: a!textField(
+                label: "Nº de empleado",
+                labelPosition: "ADJACENT",
+                value: ri!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{07e5897a-ae7d-47fe-b477-ec0d777c3fa5}nEmpleado'],
+                readOnly: true
+              )
+            ),
+            a!sideBySideItem(
+              item: a!textField(
+                label: "Nombre",
+                labelPosition: "ADJACENT",
+                value: ri!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{ea49ffaf-1db8-45a1-aa54-54fa8f543fd0}nombre'],
+                saveInto: {},
+                refreshAfter: "UNFOCUS",
+                readOnly: true,
+                validations: {}
+              )
+            ),
+            a!sideBySideItem(
+              item: a!textField(
+                label: "Apellidos",
+                labelPosition: "ADJACENT",
+                value: ri!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{a3d16573-1c20-4967-816e-7796933eb5ba}primerApellido'] & " " & ri!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{80d68571-ab99-43b4-9948-8228ee24a7d9}segundoApellido'],
+                saveInto: {},
+                refreshAfter: "UNFOCUS",
+                readOnly: true,
+                validations: {}
+              )
+            ),
+            a!sideBySideItem(
+              item: a!textField(
+                label: "Username",
+                labelPosition: "ADJACENT",
+                value: ri!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{2f088b8a-2ded-486d-b775-13240c790be6}username'],
+                saveInto: {},
+                refreshAfter: "UNFOCUS",
+                readOnly: true,
+                validations: {}
+              )
+            )
+          }
+        ),
+        a!sideBySideLayout(
+          items: {
+            a!sideBySideItem(
+              item: a!textField(
+                label: "Teléfono",
+                labelPosition: "ADJACENT",
+                value: ri!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{ca7bf85e-51ac-4967-b8f2-f1ac6dc6cdb6}telefono'],
+                saveInto: {},
+                refreshAfter: "UNFOCUS",
+                readOnly: true,
+                validations: {}
+              )
+            ),
+            a!sideBySideItem(
+              item: a!textField(
+                label: "Tfno. de emergencia",
+                labelPosition: "ADJACENT",
+                value: ri!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{e770c2c3-e8da-4b21-9bfa-c7c827ae6401}telefonoEmergencia'],
+                saveInto: {},
+                refreshAfter: "UNFOCUS",
+                readOnly: true,
+                validations: {}
+              )
+            ),
+            a!sideBySideItem(
+              item: a!textField(
+                label: "Email",
+                labelPosition: "ADJACENT",
+                value: ri!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{dc7111bc-1917-4bb6-9f39-a00714968b9d}email'],
+                saveInto: {},
+                refreshAfter: "UNFOCUS",
+                readOnly: true,
+                validations: {}
+              )
+            ),
+            a!sideBySideItem(
+              item: a!textField(
+                label: "Equipo",
+                labelPosition: "ADJACENT",
+                value: ri!equipo['recordType!{d0fd0072-2b88-478d-8b52-4ab9b2089e86}TMRA Equipo.fields.{19d1ed70-76c0-4586-b6bd-a280270fa8c6}nombreequipo'],
+                saveInto: {},
+                refreshAfter: "UNFOCUS",
+                readOnly: true,
+                validations: {}
+              )
+            )
+          }
+        ),
+        a!sideBySideLayout(
+          items: {
+            a!sideBySideItem(
+              item: a!textField(
+                label: "Categoría",
+                labelPosition: "ADJACENT",
+                value: ri!tecnico['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.fields.{94788fe6-41e5-4c42-82e6-04ab04629fce}categoria'],
+                saveInto: {},
+                refreshAfter: "UNFOCUS",
+                readOnly: true,
+                validations: {}
+              )
+            ),
+            a!sideBySideItem(
+              item: a!textField(
+                label: "Especialidad",
+                labelPosition: "ADJACENT",
+                value: ri!tecnico['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.fields.{79910afd-e1e0-4061-93be-4dbcc1cf0422}especialidad'],
+                saveInto: {},
+                refreshAfter: "UNFOCUS",
+                readOnly: true,
+                validations: {}
+              )
+            ),
+            a!sideBySideItem(
+              item: a!textField(
+                label: "Precio/hora",
+                labelPosition: "ADJACENT",
+                value: ri!tecnico['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.fields.{0113b85c-1ceb-47f0-9669-303748a3cfa8}precioHora'] & " €",
+                saveInto: {},
+                refreshAfter: "UNFOCUS",
+                readOnly: true,
+                validations: {}
+              )
+            ),
+            a!sideBySideItem(
+              item: a!textField(
+                label: "Horario trabajo",
+                labelPosition: "ADJACENT",
+                value: ri!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{5be7c513-5cea-4174-89da-2b7f4b4bf730}horarioTrabajo'],
+                saveInto: {},
+                refreshAfter: "UNFOCUS",
+                readOnly: true,
+                validations: {}
+              )
+            )
+          }
+        )
+      },
+      divider: "ABOVE"
+    )
+  }
+)

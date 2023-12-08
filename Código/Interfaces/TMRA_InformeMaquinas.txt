@@ -1,0 +1,335 @@
+/* Interfaz que muestra un informe con el estado de las máquinas. */
+
+a!localVariables(
+  local!opcionesDropdownNIncidencias: {"Tipo de máquina", "Marca"},
+  local!opcion,
+  
+  {
+    a!cardLayout(
+      contents: {
+        a!sideBySideLayout(
+          items: {
+            a!sideBySideItem(
+              item: a!richTextDisplayField(
+                value: {
+                  a!richTextItem(text: "Tech Med Resolve", size: "LARGE"),
+                  char(10),
+                  a!richTextItem(
+                    text: {
+                      "Estadísticas de las máquinas del hospital"
+                    },
+                    color: "#b7b7b7",
+                    size: "MEDIUM_PLUS"
+                  )
+                },
+                align: "LEFT"
+              ),
+              width: "3X"
+            ),
+            a!sideBySideItem(
+              item: a!richTextDisplayField(
+                label: "Rich Text",
+                labelPosition: "COLLAPSED",
+                value: {
+                  a!richTextIcon(
+                    icon: "microchip",
+                    color: "#d0e0e3",
+                    size: "LARGE_PLUS"
+                  )
+                },
+                align: "RIGHT"
+              ),
+              width: "1X"
+            ),
+            a!sideBySideItem(
+              item: a!richTextDisplayField(
+                label: "Rich Text",
+                labelPosition: "COLLAPSED",
+                value: {
+                  a!richTextIcon(
+                    icon: "bar-chart",
+                    color: "#a2c4c9",
+                    size: "LARGE_PLUS"
+                  )
+                },
+                align: "RIGHT"
+              ),
+              width: "MINIMIZE"
+            )
+          },
+          alignVertical: "MIDDLE"
+        )
+      },
+      height: "AUTO",
+      style: "#0c343d",
+      marginBelow: "STANDARD"
+    ),
+    a!sectionLayout(
+      label: "",
+      contents: {
+        a!columnsLayout(
+          columns: {
+            a!columnLayout(
+              contents: {
+                a!boxLayout(
+                  label: "Estado de las máquinas",
+                  contents: {
+                    a!columnsLayout(
+                      columns: {
+                        a!columnLayout(
+                          contents: {
+                            a!richTextDisplayField(
+                              labelposition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(
+                                  text: count(
+                                    rule!TMRA_ObtenerMaquinasPorEstado(estado: cons!TMRA_ESTADOS_MAQUINAS[1])
+                                  ),
+                                  size: "LARGE_PLUS"
+                                )
+                              },
+                              align: "CENTER"
+                            ),
+                            a!richTextDisplayField(
+                              label: "Rich Text",
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextIcon(
+                                  icon: "check-square",
+                                  color: "POSITIVE",
+                                  size: "STANDARD"
+                                ),
+                                char(10),
+                                a!richTextItem(
+                                  text: { "Operativas" },
+                                  color: "#666666",
+                                  size: "STANDARD"
+                                )
+                              },
+                              align: "CENTER"
+                            )
+                          }
+                        ),
+                        a!columnLayout(
+                          contents: {
+                            a!richTextDisplayField(
+                              labelposition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(
+                                  text: count(
+                                    rule!TMRA_ObtenerMaquinasPorEstado(estado: cons!TMRA_ESTADOS_MAQUINAS[2])
+                                  ),
+                                  size: "LARGE_PLUS"
+                                )
+                              },
+                              align: "CENTER"
+                            ),
+                            a!richTextDisplayField(
+                              label: "Rich Text",
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(
+                                  text: { a!richTextIcon(icon: "wrench") },
+                                  color: "#666666",
+                                  size: "STANDARD"
+                                ),
+                                char(10),
+                                a!richTextItem(
+                                  text: { cons!TMRA_ESTADOS_MAQUINAS[2] },
+                                  color: "#666666",
+                                  size: "STANDARD"
+                                )
+                              },
+                              align: "CENTER"
+                            )
+                          }
+                        ),
+                        a!columnLayout(
+                          contents: {
+                            a!richTextDisplayField(
+                              labelposition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(
+                                  text: count(
+                                    rule!TMRA_ObtenerMaquinasPorEstado(estado: cons!TMRA_ESTADOS_MAQUINAS[3])
+                                  ),
+                                  size: "LARGE_PLUS"
+                                )
+                              },
+                              align: "CENTER"
+                            ),
+                            a!richTextDisplayField(
+                              label: "Rich Text",
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(
+                                  text: {
+                                    a!richTextIcon(icon: "exclamation-triangle")
+                                  },
+                                  color: "#f1c232",
+                                  size: "STANDARD"
+                                ),
+                                char(10),
+                                a!richTextItem(
+                                  text: { cons!TMRA_ESTADOS_MAQUINAS[3] },
+                                  color: "#666666",
+                                  size: "STANDARD"
+                                )
+                              },
+                              align: "CENTER"
+                            )
+                          }
+                        ),
+                        a!columnLayout(
+                          contents: {
+                            a!richTextDisplayField(
+                              labelposition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(
+                                  text: count(
+                                    rule!TMRA_ObtenerMaquinasPorEstado(estado: cons!TMRA_ESTADOS_MAQUINAS[4])
+                                  ),
+                                  size: "LARGE_PLUS"
+                                )
+                              },
+                              align: "CENTER"
+                            ),
+                            a!richTextDisplayField(
+                              label: "Rich Text",
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextIcon(
+                                  icon: "window-close",
+                                  color: "#ff0000",
+                                  size: "STANDARD"
+                                ),
+                                char(10),
+                                a!richTextItem(
+                                  text: { "Dadas de baja" },
+                                  color: "#666666",
+                                  size: "STANDARD"
+                                )
+                              },
+                              align: "CENTER"
+                            )
+                          }
+                        )
+                      }
+                    )
+                  },
+                  style: "#f3f3f3",
+                  marginBelow: "STANDARD"
+                )
+              },
+              width: "MEDIUM_PLUS"
+            ),
+            a!columnLayout(
+              contents: {
+                a!cardLayout(
+                  contents: rule!TMRA_GraficoCircularMaquinasPorEstado()
+                )
+              }
+            )
+          }
+        )
+      },
+      divider: "BELOW"
+    ),
+    a!sectionLayout(
+      label: "Nº de incidencias en las máquinas",
+      contents: {
+        a!columnsLayout(
+          columns: {
+            a!columnLayout(
+              contents: {
+                a!cardLayout(
+                  contents: {
+                    a!gridField_23r3(
+                      label: "Incidencias reportadas en las máquinas",
+                      labelPosition: "ABOVE",
+                      data: rule!TMRA_ObtenerNIncidenciasMaquinas(),
+                      columns: {
+                        a!gridColumn(
+                          label: "ID",
+                          value: rule!TMRA_ObtenerMaquinaPorId(fv!row.agrupacion_id_maquina)['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{8db038c9-7580-4006-926a-55d3767f2c71}id'],
+                          align: "CENTER",
+                          width: "ICON"
+                        ),
+                        a!gridColumn(
+                          label: "Tipo",
+                          value: rule!TMRA_ObtenerMaquinaPorId(fv!row.agrupacion_id_maquina)['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{49395354-b59c-4d48-8cb7-b2bd1c740f8c}nombre'],
+                          align: "CENTER",
+                          width: "NARROW_PLUS"
+                        ),
+                        a!gridColumn(
+                          label: "Marca",
+                          value: rule!TMRA_ObtenerMaquinaPorId(fv!row.agrupacion_id_maquina)['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{f7745e36-998c-4218-8b50-0f76f12145ba}marca'],
+                          align: "CENTER",
+                          width: "NARROW_PLUS"
+                        ),
+                        a!gridColumn(
+                          label: "Modelo",
+                          value: rule!TMRA_ObtenerMaquinaPorId(fv!row.agrupacion_id_maquina)['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{4042bdf5-9551-4b97-8cf1-9fa7475ff423}modelo'],
+                          align: "CENTER",
+                          width: "NARROW_PLUS"
+                        ),
+                        a!gridColumn(
+                          label: "Nº de incidencias reportadas",
+                          value: fv!row.cuenta_n_partes_abiertos,
+                          align: "CENTER",
+                          width: "NARROW_PLUS"
+                        )
+                      },
+                      validations: {}
+                    )
+                  },
+                  height: "AUTO",
+                  style: "TRANSPARENT",
+                  marginBelow: "STANDARD",
+                  showBorder: true
+                )
+              },
+              width: "1X"
+            ),
+            a!columnLayout(
+              contents: {
+                a!cardLayout(
+                  contents: {
+                    a!dropdownField(
+                      label: "Ver nº de incidencias por:",
+                      labelPosition: "ABOVE",
+                      placeholder: "--- Selecciona un filtro ---",
+                      choiceLabels: {
+                        local!opcionesDropdownNIncidencias
+                      },
+                      
+                      choiceValues: local!opcionesDropdownNIncidencias,
+                      value: local!opcion,
+                      saveInto: local!opcion,
+                      searchDisplay: "AUTO",
+                      validations: {}
+                    ),
+                    
+                    a!match(
+                      value: local!opcion,
+                      
+                      equals: local!opcionesDropdownNIncidencias[1],
+                      then: rule!TMRA_GraficoColumnasNIncidenciasPorTipoDeMaquina(),
+                      
+                      equals: local!opcionesDropdownNIncidencias[2],
+                      then: rule!TMRA_GraficoColumnasNIncidenciasPorMarca(),
+                      
+                      default: {}
+                    )
+                      
+                  },
+                  showBorder: true
+                )
+              }
+            )
+          }
+        )
+      }
+    )
+  }
+)

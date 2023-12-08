@@ -1,0 +1,217 @@
+/* Interfaz usada en el PM para actualizar la información de un empleado del hospital en el sistema. */
+
+a!localVariables(
+  local!username: a!refreshVariable(
+    value: ri!recordEmpleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{2f088b8a-2ded-486d-b775-13240c790be6}username'],
+    refreshOnReferencedVarChange: false
+  ),
+
+  a!formLayout(
+    contents: {
+      a!sectionLayout(
+        label: "Actualizar información del técnico",
+        contents: {
+          a!horizontalLine(),
+          a!sideBySideLayout(
+            items: {
+              a!sideBySideItem(
+                item: a!textField(
+                  label: "Nombre",
+                  labelPosition: "ADJACENT",
+                  placeholder: "Ej.: Jesús",
+                  value: ri!recordEmpleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{ea49ffaf-1db8-45a1-aa54-54fa8f543fd0}nombre'],
+                  saveInto: ri!recordEmpleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{ea49ffaf-1db8-45a1-aa54-54fa8f543fd0}nombre'],
+                  refreshAfter: "UNFOCUS",
+                  required: true,
+                  validations: if(regexmatch("^\s*([A-Za-zÁÉÍÓÚáéíóúüÜ]+\s*)*\s*$", ri!recordEmpleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{ea49ffaf-1db8-45a1-aa54-54fa8f543fd0}nombre']), "", "El nombre no debe incluir números ni más de un espacio entre nombres compuestos")
+                )
+              ),
+              a!sideBySideItem(
+                item: a!textField(
+                  label: "Primer Apellido",
+                  labelPosition: "ADJACENT",
+                  placeholder: "Primer apellido del técnico",
+                  value: ri!recordEmpleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{a3d16573-1c20-4967-816e-7796933eb5ba}primerApellido'],
+                  saveInto: ri!recordEmpleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{a3d16573-1c20-4967-816e-7796933eb5ba}primerApellido'],
+                  refreshAfter: "UNFOCUS",
+                  required: true,
+                  validations: if(regexmatch("^\s*([A-Za-zÁÉÍÓÚáéíóúüÜ]+\s*)*\s*$", ri!recordEmpleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{a3d16573-1c20-4967-816e-7796933eb5ba}primerApellido']), "", "Los apellidos no deben incluir números ni caracteres especiales.")
+                )
+              ),
+              a!sideBySideItem(
+                item: a!textField(
+                  label: "Segundo Apellido",
+                  labelPosition: "ADJACENT",
+                  placeholder: "Segundo apellido del técnico",
+                  value: ri!recordEmpleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{80d68571-ab99-43b4-9948-8228ee24a7d9}segundoApellido'],
+                  saveInto: ri!recordEmpleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{80d68571-ab99-43b4-9948-8228ee24a7d9}segundoApellido'],
+                  refreshAfter: "UNFOCUS",
+                  required: true,
+                  validations: if(regexmatch("^\s*([A-Za-zÁÉÍÓÚáéíóúüÜ]+\s*)*\s*$", ri!recordEmpleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{80d68571-ab99-43b4-9948-8228ee24a7d9}segundoApellido']), "", "Los apellidos no deben incluir números ni caracteres especiales.")
+                )
+              )
+            }
+          ),
+          a!sideBySideLayout(
+            items: {
+              a!sideBySideItem(
+                item: a!textField(
+                  label: "Teléfono",
+                  labelPosition: "ADJACENT",
+                  placeholder: "Ej.: +3468888888",
+                  value: ri!recordEmpleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{ca7bf85e-51ac-4967-b8f2-f1ac6dc6cdb6}telefono'],
+                  saveInto: ri!recordEmpleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{ca7bf85e-51ac-4967-b8f2-f1ac6dc6cdb6}telefono'],
+                  refreshAfter: "UNFOCUS",
+                  required: true,
+                  validations: if(regexmatch("^\+\d{11}$", ri!recordEmpleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{ca7bf85e-51ac-4967-b8f2-f1ac6dc6cdb6}telefono']), "", "El número es incorrecto. Debes indicar el prefijo (ej. +34) y los 9 números seguidos. Ejemplo: +34666666666")
+                )
+              ),
+              a!sideBySideItem(
+                item: a!textField(
+                  label: "Tfno. Emergencia",
+                  labelPosition: "ADJACENT",
+                  placeholder: "Ej.: +3468888888",
+                  value: ri!recordEmpleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{e770c2c3-e8da-4b21-9bfa-c7c827ae6401}telefonoEmergencia'],
+                  saveInto: ri!recordEmpleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{e770c2c3-e8da-4b21-9bfa-c7c827ae6401}telefonoEmergencia'],
+                  refreshAfter: "UNFOCUS",
+                  validations: if(regexmatch("^\+\d{11}$", ri!recordEmpleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{e770c2c3-e8da-4b21-9bfa-c7c827ae6401}telefonoEmergencia']), "", "El número es incorrecto. Debes indicar el prefijo (ej. +34) y los 9 números seguidos. Ejemplo: +34666666666")
+                )
+              ),
+              a!sideBySideItem(
+                item: a!textField(
+                  label: "Email",
+                  labelPosition: "ADJACENT",
+                  placeholder: "Ej.: email@ejemplo.com",
+                  value: ri!recordEmpleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{dc7111bc-1917-4bb6-9f39-a00714968b9d}email'],
+                  saveInto: ri!recordEmpleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{dc7111bc-1917-4bb6-9f39-a00714968b9d}email'],
+                  refreshAfter: "UNFOCUS",
+                  required: true,
+                  validations: if(regexmatch("^[^@]+@[^@]+\.[a-zA-Z]{2,}$", ri!recordEmpleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{dc7111bc-1917-4bb6-9f39-a00714968b9d}email']),"","El mail no es valido")
+                )
+              )
+            }
+          ),
+          a!sideBySideLayout(
+            items: {
+              a!sideBySideItem(
+                item: a!textField(
+                  label: "Username",
+                  labelPosition: "ADJACENT",
+                  placeholder: "Nombre de usuario en la aplicación",
+                  value: ri!recordEmpleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{2f088b8a-2ded-486d-b775-13240c790be6}username'],
+                  saveInto: ri!recordEmpleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{2f088b8a-2ded-486d-b775-13240c790be6}username'],
+                  refreshAfter: "UNFOCUS",
+                  required: true,
+                  validations: {
+                    if(
+
+                      condition: and(
+                        rule!TMRA_ComprobarUsuario(ri!recordEmpleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{2f088b8a-2ded-486d-b775-13240c790be6}username']) = cons!TMRA_ESTADOS_USUARIOS_APPIAN[3],
+                        ri!recordEmpleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{2f088b8a-2ded-486d-b775-13240c790be6}username'] <> local!username
+                      ),
+                      valueIfTrue: "Nombre de usuario en uso.",
+                      valueIfFalse: ""
+                    )
+
+                  }
+                )
+              ),
+              a!sideBySideItem(
+                item: a!textField(
+                  label: "Horario trabajo",
+                  labelPosition: "ADJACENT",
+                  placeholder: "Ej.: De lunes a viernes - De 8:30 a 16:30",
+                  value: ri!recordEmpleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{5be7c513-5cea-4174-89da-2b7f4b4bf730}horarioTrabajo'],
+                  saveInto: ri!recordEmpleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{5be7c513-5cea-4174-89da-2b7f4b4bf730}horarioTrabajo'],
+                  refreshAfter: "UNFOCUS",
+                  required: true,
+                  validations: {}
+                )
+              ),
+              a!sideBySideItem(
+                item: a!textField(
+                  label: "Puesto",
+                  labelPosition: "ADJACENT",
+                  placeholder: "Ej.: Anestesista",
+                  value: ri!recordEmpleadoHospital['recordType!{02acd5dc-7ec9-4237-8e90-70914889db6f}TMRA Empleado Hospital.fields.{2dcf56ab-7112-45e8-9189-0a869aecccca}puesto'],
+                  saveInto: ri!recordEmpleadoHospital['recordType!{02acd5dc-7ec9-4237-8e90-70914889db6f}TMRA Empleado Hospital.fields.{2dcf56ab-7112-45e8-9189-0a869aecccca}puesto'],
+                  refreshAfter: "UNFOCUS",
+                  required: true,
+                  validations: {}
+                )
+              )
+            }
+          ),
+          a!sideBySideLayout(
+            items: {
+              a!sideBySideItem(
+                item: a!textField(
+                  label: "Área",
+                  labelPosition: "ADJACENT",
+                  placeholder: "Ej.: Cirujía",
+                  value: ri!recordEmpleadoHospital['recordType!{02acd5dc-7ec9-4237-8e90-70914889db6f}TMRA Empleado Hospital.fields.{89a691c0-7bbe-4898-ada9-dcbede6e810a}area'],
+                  saveInto: ri!recordEmpleadoHospital['recordType!{02acd5dc-7ec9-4237-8e90-70914889db6f}TMRA Empleado Hospital.fields.{89a691c0-7bbe-4898-ada9-dcbede6e810a}area'],
+                  refreshAfter: "UNFOCUS",
+                  required: true,
+                  validations: {}
+                )
+              ),
+              a!sideBySideItem(
+                item: a!fileUploadField(
+                  label: "Fotografía",
+                  labelPosition: "ADJACENT",
+                  placeholder: "Arrastra la fotografía aquí",
+                  target: cons!TMRA_FOTOGRAFIAS_EMPLEADOS_HOSPITAL,
+                  value: ri!recordEmpleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{cdfff844-7812-4d01-8ec3-5beff29b0fb5}fotografia'],
+                  saveInto: if(
+                    tointeger(ri!recordEmpleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{cdfff844-7812-4d01-8ec3-5beff29b0fb5}fotografia']) = 0, 
+                    null, 
+                    ri!recordEmpleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{cdfff844-7812-4d01-8ec3-5beff29b0fb5}fotografia']
+                  ),
+                  validations: if(
+                    condition: 
+                    and(
+                      {
+                        fv!files.extension <> "jpg",
+                        fv!files.extension <> "jpeg",
+                        fv!files.extension <> "png"
+                      }
+                    ),
+                    valueIfTrue: "Tiene que ser un archivo png o jpg",
+                    valueIfFalse: ""
+                  )
+
+                )
+              ),
+              a!sideBySideItem(
+                item: a!textField(
+                  readOnly: true
+                )
+              )
+            }
+          )
+        }
+      )
+    },
+    buttons: a!buttonLayout(
+      primaryButtons: {
+        a!buttonWidget_23r3(
+          label: "Guardar",
+          submit: true,
+          style: "PRIMARY",
+          validate: true
+        )
+      },
+      secondaryButtons: {
+        a!buttonWidget_23r3(
+          label: "Cancelar",
+          value: true,
+          saveInto: ri!cancelar,
+          submit: true,
+          style: "NORMAL",
+          validate: false
+        )
+      }
+    )
+  )
+)

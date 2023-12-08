@@ -1,0 +1,18 @@
+/* Interfaz para el summary view de los técnicos. */
+a!localVariables(
+  local!empleado: rule!TMRA_ObtenerEmpleadoPorNEmpleado(ri!recordTecnico['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.fields.{bc1f1de6-d1ac-40f9-b166-4836287852bc}nEmpleadoFk']),
+  local!equipo:rule!TMRA_ObtenerEquipoPorId(ri!recordTecnico['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.fields.{02c8e2cf-3f9a-4f56-9fb7-ba9874e50fff}idEquipoFk']),
+  a!headerContentLayout(
+  header: {
+    rule!TMRA_CabeceraInformacionEmpleado(local!empleado)
+  },
+  contents: {
+   
+    rule!TMRA_InformacionTecnicoSummary(
+      empleado: local!empleado,
+      equipo: local!equipo,
+      tecnico: ri!recordTecnico
+    )
+    
+  }
+))

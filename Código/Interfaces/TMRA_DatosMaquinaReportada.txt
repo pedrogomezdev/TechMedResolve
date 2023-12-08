@@ -1,0 +1,75 @@
+/* Interfaz que muestra la información de una máquina reportada en un parte. */
+
+a!sectionLayout(
+  label: "Datos de la máquina reportada",
+  labelIcon: "microchip",
+  contents: {
+    a!cardLayout(
+      contents: {
+        a!sideBySideLayout(
+          items: {
+            a!sideBySideItem(
+              item: a!textField(
+                label: "Nombre:",
+                labelPosition: "ADJACENT",
+                value: ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{49395354-b59c-4d48-8cb7-b2bd1c740f8c}nombre'],
+                refreshAfter: "UNFOCUS",
+                readOnly: true,
+                validations: {}
+              )
+            ),
+            a!sideBySideItem(
+              item: a!textField(
+                label: "Marca:",
+                labelPosition: "ADJACENT",
+                value: ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{f7745e36-998c-4218-8b50-0f76f12145ba}marca'],
+                refreshAfter: "UNFOCUS",
+                readOnly: true,
+                validations: {}
+              )
+            ),
+            a!sideBySideItem(
+              item: a!textField(
+                label: "Modelo:",
+                labelPosition: "ADJACENT",
+                value: ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{4042bdf5-9551-4b97-8cf1-9fa7475ff423}modelo'],
+                refreshAfter: "UNFOCUS",
+                readOnly: true,
+                validations: {}
+              )
+            ),
+            a!sideBySideItem(
+              item: a!textField(
+                label: "Nº de serie:",
+                labelPosition: "ADJACENT",
+                value: ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{56f17aea-a4d7-4a7b-a518-ee01cc73eb9e}nSerie'],
+                refreshAfter: "UNFOCUS",
+                readOnly: true,
+                validations: {}
+              )
+            )
+          }
+        ),
+        a!sideBySideLayout(
+          items: {
+            a!sideBySideItem(
+              item: a!textField(
+                label: "Descripción avería:",
+                labelPosition: "ADJACENT",
+                value: ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{82b0a286-0506-4e23-88a0-61a75b7fcecd}descripcionAveria'],
+                refreshAfter: "UNFOCUS",
+                readOnly: true,
+                validations: {}
+              )
+            )
+
+          }
+        )
+      },
+      height: "AUTO",
+      style: "INFO",
+      marginBelow: "STANDARD"
+    )
+  },
+  isCollapsible: true
+),

@@ -1,0 +1,95 @@
+/* Interfaz con la información de la máquina para el Summary View de la máquina */
+
+a!sectionLayout(
+  label: "",
+  contents: {
+    a!sectionLayout(
+      label: " Información de la máquina",
+      labelIcon: "info-circle",
+      contents: {
+        a!sideBySideLayout(
+          items: {
+            a!sideBySideItem(
+              item: a!textField(
+                label: "Nombre",
+                labelPosition: "ADJACENT",
+                value: ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{49395354-b59c-4d48-8cb7-b2bd1c740f8c}nombre'],
+                readOnly: true
+              )
+            ),
+            a!sideBySideItem(
+              item: a!textField(
+                label: "Marca",
+                labelPosition: "ADJACENT",
+                value: ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{f7745e36-998c-4218-8b50-0f76f12145ba}marca'],
+                saveInto: {},
+                refreshAfter: "UNFOCUS",
+                readOnly: true,
+                validations: {}
+              )
+            ),
+            a!sideBySideItem(
+              item: a!textField(
+                label: "Modelo",
+                labelPosition: "ADJACENT",
+                value: ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{4042bdf5-9551-4b97-8cf1-9fa7475ff423}modelo'],
+                saveInto: {},
+                refreshAfter: "UNFOCUS",
+                readOnly: true,
+                validations: {}
+              )
+            ),
+            a!sideBySideItem(
+              item: a!textField(
+                label: "Nº de serie",
+                labelPosition: "ADJACENT",
+                value: ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{56f17aea-a4d7-4a7b-a518-ee01cc73eb9e}nSerie'],
+                saveInto: {},
+                refreshAfter: "UNFOCUS",
+                readOnly: true,
+                validations: {}
+              )
+            )
+          }
+        ),
+        a!sideBySideLayout(
+          items: {
+            a!sideBySideItem(
+              item: a!textField(
+                label: "Estado",
+                labelPosition: "ADJACENT",
+                value: ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{fff97e62-ff27-415c-94c1-af562404ecb8}estado'],
+                saveInto: {},
+                refreshAfter: "UNFOCUS",
+                readOnly: true,
+                validations: {}
+              )
+            )
+            
+          }
+        )
+        
+      },
+      divider: "ABOVE"
+    ),
+    a!horizontalLine(),
+    a!paragraphField(
+      label: "Descripción",
+      labelPosition: "ABOVE",
+      value: ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{62fdac29-befa-41a5-b866-8694fddb311d}descripcion'],
+      saveInto: {},
+      refreshAfter: "UNFOCUS",
+      readOnly: true,
+      validations: {}
+    ),
+    a!textField(
+      label: "Notas adicionales",
+      labelPosition: "ABOVE",
+      value: if(a!isNullOrEmpty(ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{7ce9192e-9227-40ef-ab7b-23e89f4db302}notasAdicionales']), "-",ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{7ce9192e-9227-40ef-ab7b-23e89f4db302}notasAdicionales']),
+      saveInto: {},
+      refreshAfter: "UNFOCUS",
+      readOnly: true,
+      validations: {}
+    )
+  }
+)

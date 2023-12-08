@@ -1,0 +1,62 @@
+/* Interfaz formada por una tarjeta con la foto y nombre de una máquina. */
+
+a!cardLayout(
+  contents: {
+    a!sideBySideLayout(
+      items: {
+        a!sideBySideItem(
+          item: a!imageField(
+            label: "",
+            labelPosition: "ABOVE",
+            images: {
+              a!documentImage(
+                document: if(
+                  condition: a!isNullOrEmpty(
+                    ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{f19eab4d-1862-4a82-877e-018dd84c7ff6}foto']
+                  ),
+                  valueIfTrue: a!EXAMPLE_DOCUMENT_IMAGE(),
+                  valueIfFalse: index(
+                    ri!maquina,
+                    'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{f19eab4d-1862-4a82-877e-018dd84c7ff6}foto',
+                    a!EXAMPLE_DOCUMENT_IMAGE()
+                  )
+                )
+                
+                
+                
+                
+              )
+            },
+            size: "MEDIUM",
+            isThumbnail: false,
+            style: "STANDARD"
+          ),
+          width: "MINIMIZE"
+        ),
+        a!sideBySideItem(
+          item: a!richTextDisplayField(
+            labelPosition: "COLLAPSED",
+            value: {
+              a!richTextItem(
+                text: ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{49395354-b59c-4d48-8cb7-b2bd1c740f8c}nombre'] & " - " & ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{f7745e36-998c-4218-8b50-0f76f12145ba}marca'] & " " & ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{4042bdf5-9551-4b97-8cf1-9fa7475ff423}modelo'],
+                size: "MEDIUM_PLUS",
+                style: {
+                  "STRONG"
+                }
+              )
+            },
+            preventWrapping: true
+          ),
+          width: "AUTO"
+        )
+      },
+      alignVertical: "BOTTOM",
+      spacing: "SPARSE"
+    )
+  },
+  height: "AUTO",
+  style: "#666666",
+  padding: "STANDARD",
+  marginBelow: "NONE",
+  showBorder: false
+)

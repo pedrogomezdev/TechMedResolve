@@ -1,0 +1,34 @@
+/* Tarjeta para la cabecera del summary view de un parte. */
+
+a!cardLayout(
+  contents: {
+    a!sideBySideLayout(
+      items: {
+        
+        a!sideBySideItem(
+          item: a!richTextDisplayField(
+            labelPosition: "COLLAPSED",
+            value: {
+              a!richTextItem(
+                text: "Orden de trabajo Nº " & ri!ordenTrabajo,
+                size: "MEDIUM_PLUS",
+                style: {
+                  "STRONG"
+                }
+              )
+            },
+            preventWrapping: true
+          ),
+          width: "AUTO"
+        )
+      },
+      alignVertical: "BOTTOM",
+      spacing: "SPARSE"
+    )
+  },
+  height: "AUTO",
+  style: "#d9d9d9",
+  padding: "STANDARD",
+  marginBelow: "NONE",
+  showBorder: true
+)

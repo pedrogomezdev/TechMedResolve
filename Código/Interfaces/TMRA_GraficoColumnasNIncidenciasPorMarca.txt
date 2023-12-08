@@ -1,0 +1,51 @@
+/* Gráfico de columnas que muestra el nº de incidencias de las máquinas por marca. */
+
+{
+  a!columnChartField(
+/**/
+    data: a!recordData(
+      recordType: 'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina',
+      filters: a!queryLogicalExpression(
+        operator: "AND",
+        filters: {
+          a!queryFilter(
+            field: 'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{9c3dcc4c-1e1c-486b-b14a-89ee2f5b54f5}estaActivo',
+            operator: "=",
+            value: true
+          )
+        },
+        ignoreFiltersWithEmptyValues: true
+      )
+    ),
+    config: a!columnChartConfig(
+      primaryGrouping: a!grouping(
+        field: 'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{f7745e36-998c-4218-8b50-0f76f12145ba}marca',
+        alias: "marca_primaryGrouping"
+      ),
+      secondaryGrouping: a!grouping(
+        field: 'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{49395354-b59c-4d48-8cb7-b2bd1c740f8c}nombre',
+        alias: "nombre_secondaryGrouping"
+      ),
+      measures: {
+        a!measure(
+          function: "COUNT",
+          field: 'recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.relationships.{c163a052-9583-4c03-b391-65055a1c33f3}tmraParte.fields.{3f384ff0-002a-471a-bb0c-14a42ade735d}ordenTrabajo',
+          alias: "ordenTrabajo_count_measure1"
+        )
+      },
+      dataLimit: 100
+    ),
+    label: "Número de incidencias en máquinas por marca",
+    xAxisTitle: "Nombre de las máquinas",
+    yAxisTitle: "Nº de incidencias",
+    stacking: "NORMAL",
+    showLegend: true,
+    showTooltips: true,
+    labelPosition: "ABOVE",
+    colorScheme: "MOSS",
+    height: "MEDIUM",
+    xAxisStyle: "STANDARD",
+    yAxisStyle: "STANDARD",
+    refreshAfter: "RECORD_ACTION"
+  )
+}

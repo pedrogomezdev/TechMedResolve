@@ -1,0 +1,59 @@
+/* Interfaz formada por una tarjeta con la foto y nombre de un empleado. */
+
+a!cardLayout(
+  contents: {
+    a!sideBySideLayout(
+      items: {
+        a!sideBySideItem(
+          item: a!imageField(
+            label: "",
+            labelPosition: "ABOVE",
+            images: {
+              a!documentImage(
+                document: if(
+                  condition: a!isNullOrEmpty(
+                    ri!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{cdfff844-7812-4d01-8ec3-5beff29b0fb5}fotografia']
+                  ),
+                  valueIfTrue: a!EXAMPLE_DOCUMENT_IMAGE(),
+                  valueIfFalse: index(
+                    ri!empleado,
+                    'recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{cdfff844-7812-4d01-8ec3-5beff29b0fb5}fotografia',
+                    a!EXAMPLE_DOCUMENT_IMAGE()
+                  )
+                )
+                
+              )
+            },
+            size: "MEDIUM",
+            isThumbnail: false,
+            style: "STANDARD"
+          ),
+          width: "MINIMIZE"
+        ),
+        a!sideBySideItem(
+          item: a!richTextDisplayField(
+            labelPosition: "COLLAPSED",
+            value: {
+              a!richTextItem(
+                text: {ri!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{ea49ffaf-1db8-45a1-aa54-54fa8f543fd0}nombre'] & " " & ri!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{a3d16573-1c20-4967-816e-7796933eb5ba}primerApellido'] & " " & ri!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{80d68571-ab99-43b4-9948-8228ee24a7d9}segundoApellido']},
+                size: "MEDIUM_PLUS",
+                style: {
+                  "STRONG"
+                }
+              )
+            },
+            preventWrapping: true
+          ),
+          width: "AUTO"
+        )
+      },
+      alignVertical: "BOTTOM",
+      spacing: "SPARSE"
+    )
+  },
+  height: "AUTO",
+  style: "#666666",
+  padding: "STANDARD",
+  marginBelow: "NONE",
+  showBorder: false
+)

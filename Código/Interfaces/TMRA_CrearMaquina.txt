@@ -1,0 +1,151 @@
+/* Interfaz para la acción de añadir una máquina. */
+
+a!formLayout(
+  contents: {
+    a!sectionLayout(
+      label: "Añadir máquina",
+      contents: {
+        a!horizontalLine(),
+        a!sideBySideLayout(
+          items: {
+            a!sideBySideItem(
+              item: a!textField(
+                label: "Nombre",
+                labelPosition: "ABOVE",
+                placeholder: "Ej.: Electrocardiógrafo",
+                value: ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{49395354-b59c-4d48-8cb7-b2bd1c740f8c}nombre'],
+                saveInto: ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{49395354-b59c-4d48-8cb7-b2bd1c740f8c}nombre'],
+                refreshAfter: "UNFOCUS",
+                required: true,
+                validations: {}
+              )
+            ),
+            a!sideBySideItem(
+              item: a!dropdownField(
+                label: "Estado",
+                labelPosition: "ABOVE",
+                placeholder: "--- Selecciona el estado en el que se encuentra la máquina ---",
+                choiceLabels: cons!TMRA_ESTADOS_MAQUINAS,
+                choiceValues: cons!TMRA_ESTADOS_MAQUINAS,
+                value: ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{fff97e62-ff27-415c-94c1-af562404ecb8}estado'],
+                saveInto: ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{fff97e62-ff27-415c-94c1-af562404ecb8}estado'],
+                searchDisplay: "AUTO",
+                required: true,
+                validations: {}
+              )
+            ),
+            a!sideBySideItem(
+              item: a!fileUploadField(
+                label: "Fotografía",
+                labelPosition: "ABOVE",
+                placeholder: "Arrastra la fotografía aquí",
+                target: cons!TMRA_FOTOGRAFIAS_MAQUINAS,
+                value: ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{f19eab4d-1862-4a82-877e-018dd84c7ff6}foto'],
+                saveInto: if(tointeger(ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{f19eab4d-1862-4a82-877e-018dd84c7ff6}foto']) = 0, null, ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{f19eab4d-1862-4a82-877e-018dd84c7ff6}foto']),
+                validations: if(
+                  condition: 
+                  and(
+                    {
+                      fv!files.extension <> "jpg",
+                      fv!files.extension <> "jpeg",
+                      fv!files.extension <> "png"
+                    }
+                  ),
+                  valueIfTrue: "Tiene que ser un archivo png o jpg",
+                  valueIfFalse: ""
+                )
+              )
+            )
+          }
+        ),
+        a!sideBySideLayout(
+          items: {
+            a!sideBySideItem(
+              item: a!textField(
+                label: "Marca",
+                labelPosition: "ABOVE",
+                placeholder: "Ej.: Nihon Kohden",
+                value: ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{f7745e36-998c-4218-8b50-0f76f12145ba}marca'],
+                saveInto: ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{f7745e36-998c-4218-8b50-0f76f12145ba}marca'],
+                refreshAfter: "UNFOCUS",
+                required: true,
+                validations: {}
+              )
+            ),
+            a!sideBySideItem(
+              item: a!textField(
+                label: "Modelo",
+                labelPosition: "ABOVE",
+                placeholder: "Ej.: EKG-2000",
+                value: ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{4042bdf5-9551-4b97-8cf1-9fa7475ff423}modelo'],
+                saveInto: ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{4042bdf5-9551-4b97-8cf1-9fa7475ff423}modelo'],
+                refreshAfter: "UNFOCUS",
+                required: true,
+                validations: {}
+              )
+            ),
+            a!sideBySideItem(
+              item: a!textField(
+                label: "Nº de Serie",
+                labelPosition: "ABOVE",
+                
+                placeholder: "Ej.: XXXXXXXXXX",
+                value: ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{56f17aea-a4d7-4a7b-a518-ee01cc73eb9e}nSerie'],
+                saveInto: ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{56f17aea-a4d7-4a7b-a518-ee01cc73eb9e}nSerie'],
+                refreshAfter: "UNFOCUS",
+                characterLimit: 20,
+                required: true,
+                validations: {}
+              )
+            )
+          }
+        ),
+        a!paragraphField(
+          label: "Descripción",
+          labelPosition: "ABOVE",
+          placeholder: "Agrega una descripción del material",
+          value: ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{62fdac29-befa-41a5-b866-8694fddb311d}descripcion'],
+          saveInto: ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{62fdac29-befa-41a5-b866-8694fddb311d}descripcion'],
+          refreshAfter: "UNFOCUS",
+          height: "MEDIUM",
+          validations: {}
+        ),
+        a!paragraphField(
+          label: "Notas adicionales",
+          labelPosition: "ABOVE",
+          placeholder: "Añade cualquier observación adicional sobre esta máquina que consideres de relevancia",
+          value: ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{7ce9192e-9227-40ef-ab7b-23e89f4db302}notasAdicionales'],
+          saveInto: ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{7ce9192e-9227-40ef-ab7b-23e89f4db302}notasAdicionales'],
+          refreshAfter: "UNFOCUS",
+          height: "SHORT",
+          validations: {}
+        )
+
+        
+      }
+    )
+
+  },
+  buttons: a!buttonLayout(
+    primaryButtons: {
+      a!buttonWidget_23r3(
+        label: "AÑADIR",
+        submit: true,
+        style: "PRIMARY"
+      )
+    },
+    secondaryButtons: {
+      a!buttonWidget_23r3(
+        label: "CANCELAR",
+        value: true,
+        saveInto: ri!cancelar,
+        submit: true,
+        style: "NORMAL",
+        validate: false
+      )
+    }
+  )
+
+)
+
+

@@ -1,3 +1,4 @@
+/* Interfaz para la confirmación del borrado de un mensaje. */
 a!formLayout(
   label: "¿Desea eliminar el mensaje?",
   contents: {

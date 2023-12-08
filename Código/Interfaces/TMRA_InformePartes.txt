@@ -1,0 +1,239 @@
+/* Interfaz que muestra un informe con el estado de los partes de reparación para los supervisores.*/
+
+{
+  a!cardLayout(
+    contents: {
+      a!sideBySideLayout(
+        items: {
+          a!sideBySideItem(
+            item: a!richTextDisplayField(
+              value: {
+                a!richTextItem(text: "Tech Med Resolve", size: "LARGE"),
+                char(10),
+                a!richTextItem(
+                  text: {
+                    "Estadísticas de los partes de reparación"
+                  },
+                  color: "#b7b7b7",
+                  size: "MEDIUM_PLUS"
+                )
+              },
+              align: "LEFT"
+            ),
+            width: "3X"
+          ),
+          a!sideBySideItem(
+            item: a!richTextDisplayField(
+              label: "Rich Text",
+              labelPosition: "COLLAPSED",
+              value: {
+                a!richTextIcon(
+                  icon: "file-contract",
+                  color: "#d0e0e3",
+                  size: "LARGE_PLUS"
+                )
+              },
+              align: "RIGHT"
+            ),
+            width: "1X"
+          ),
+          a!sideBySideItem(
+            item: a!richTextDisplayField(
+              label: "Rich Text",
+              labelPosition: "COLLAPSED",
+              value: {
+                a!richTextIcon(
+                  icon: "bar-chart",
+                  color: "#a2c4c9",
+                  size: "LARGE_PLUS"
+                )
+              },
+              align: "RIGHT"
+            ),
+            width: "MINIMIZE"
+          )
+        },
+        alignVertical: "MIDDLE"
+      )
+    },
+    height: "AUTO",
+    style: "#0c343d",
+    marginBelow: "STANDARD"
+  ),
+  a!sectionLayout(
+    label: "",
+    contents: {
+      a!columnsLayout(
+        columns: {
+          a!columnLayout(
+            contents: {
+              a!boxLayout(
+                label: "Estado de los partes",
+                contents: {
+                  a!columnsLayout(
+                    columns: {
+                      
+                      a!columnLayout(
+                        contents: {
+                          a!richTextDisplayField(
+                            labelposition: "COLLAPSED",
+                            value: {
+                              a!richTextItem(
+                                text: count(
+                                  rule!TMRA_ObtenerPartesPorEstado(estado: cons!TMRA_ESTADOS_PARTES[1])
+                                ),
+                                size: "LARGE_PLUS"
+                              )
+                            },
+                            align: "CENTER"
+                          ),
+                          a!richTextDisplayField(
+                            label: "Rich Text",
+                            labelPosition: "COLLAPSED",
+                            value: {
+                              a!richTextIcon(
+                                icon: "spinner",
+                                color: "#1155cc",
+                                size: "STANDARD"
+                              ),
+                              char(10),
+                              a!richTextItem(
+                                text: { cons!TMRA_ESTADOS_PARTES[1] },
+                                color: "#666666",
+                                size: "STANDARD"
+                              )
+                            },
+                            align: "CENTER"
+                          )
+                        }
+                      ),
+                      a!columnLayout(
+                        contents: {
+                          a!richTextDisplayField(
+                            labelposition: "COLLAPSED",
+                            value: {
+                              a!richTextItem(
+                                text: count(
+                                  rule!TMRA_ObtenerPartesPorEstado(estado: cons!TMRA_ESTADOS_PARTES[2])
+                                ),
+                                size: "LARGE_PLUS"
+                              )
+                            },
+                            align: "CENTER"
+                          ),
+                          a!richTextDisplayField(
+                            label: "Rich Text",
+                            labelPosition: "COLLAPSED",
+                            value: {
+                              a!richTextItem(
+                                text: {
+                                  a!richTextIcon(icon: "pause-circle",
+                                    color: "#f1c232")
+                                },
+                                color: "#f1c232",
+                                size: "STANDARD"
+                              ),
+                              char(10),
+                              a!richTextItem(
+                                text: { cons!TMRA_ESTADOS_PARTES[2] },
+                                color: "#666666",
+                                size: "STANDARD"
+                              )
+                            },
+                            align: "CENTER"
+                          )
+                        }
+                      ),
+                      
+                      a!columnLayout(
+                        contents: {
+                          a!richTextDisplayField(
+                            labelposition: "COLLAPSED",
+                            value: {
+                              a!richTextItem(
+                                text: count(
+                                  rule!TMRA_ObtenerPartesPorEstado(estado: cons!TMRA_ESTADOS_PARTES[3])
+                                ),
+                                size: "LARGE_PLUS"
+                              )
+                            },
+                            align: "CENTER"
+                          ),
+                          a!richTextDisplayField(
+                            label: "Rich Text",
+                            labelPosition: "COLLAPSED",
+                            value: {
+                              a!richTextItem(
+                                text: { a!richTextIcon(icon: "check-square-o-alt",
+                                color: "#e69138") },
+                                color: "#666666",
+                                size: "STANDARD"
+                              ),
+                              char(10),
+                              a!richTextItem(
+                                text: { cons!TMRA_ESTADOS_PARTES[3] },
+                                color: "#666666",
+                                size: "STANDARD"
+                              )
+                            },
+                            align: "CENTER"
+                          )
+                        }
+                      ),
+                      a!columnLayout(
+                        contents: {
+                          a!richTextDisplayField(
+                            labelposition: "COLLAPSED",
+                            value: {
+                              a!richTextItem(
+                                text: count(
+                                  rule!TMRA_ObtenerPartesPorEstado(estado: cons!TMRA_ESTADOS_PARTES[4])
+                                ),
+                                size: "LARGE_PLUS"
+                              )
+                            },
+                            align: "CENTER"
+                          ),
+                          a!richTextDisplayField(
+                            label: "Rich Text",
+                            labelPosition: "COLLAPSED",
+                            value: {
+                              a!richTextIcon(
+                                icon: "check-square",
+                                color: "POSITIVE",
+                                size: "STANDARD"
+                              ),
+                              char(10),
+                              a!richTextItem(
+                                text: { cons!TMRA_ESTADOS_PARTES[4] },
+                                color: "#666666",
+                                size: "STANDARD"
+                              )
+                            },
+                            align: "CENTER"
+                          )
+                        }
+                      ),
+                    }
+                  )
+                },
+                style: "#f3f3f3",
+                marginBelow: "STANDARD"
+              )
+            },
+            width: "MEDIUM_PLUS"
+          ),
+          a!columnLayout(
+            contents: {
+              a!cardLayout(
+                contents:               rule!TMRA_GraficoCircularPartesPorEstado()
+              )
+
+            }
+          )
+        }
+      )
+    },
+    divider: "BELOW"
+  )
+}

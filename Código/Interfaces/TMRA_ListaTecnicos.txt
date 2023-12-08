@@ -1,0 +1,169 @@
+/* Lista que muestra todos los técnicos en el sistema y que permite un CRUD completo. */
+
+a!localVariables(
+  local!mostrarTecnico: false,
+  local!nEmpleado,
+  local!empleado,
+  local!equipo,
+  local!tecnico,
+  if(
+    not(local!mostrarTecnico),
+    {
+      a!gridField_23r3(
+
+        label: "",
+        labelPosition: "ABOVE",
+        data: a!recordData(
+          recordType: 'recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico',
+          filters: a!queryLogicalExpression(
+            operator: "AND",
+            filters: {
+              a!queryFilter(
+                field: 'recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.fields.{d961fe36-c255-4e3f-be93-fb04c323e216}estaActivo',
+                operator: "=",
+                value: true
+              )
+            },
+            ignoreFiltersWithEmptyValues: true
+          )
+        ),
+        columns: {
+          a!gridColumn(
+            label: "Foto",
+            align: "CENTER",
+            value: a!imageField(
+              images: a!documentImage(
+                document: if(
+                  a!isNullOrEmpty(fv!row['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.relationships.{68cb95cc-f63f-4d1a-b290-8d30e056c923}tmraEmpleado.fields.{cdfff844-7812-4d01-8ec3-5beff29b0fb5}fotografia']),
+                  a!EXAMPLE_DOCUMENT_IMAGE(),
+                  index(
+                    fv!row,
+                    'recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.relationships.{68cb95cc-f63f-4d1a-b290-8d30e056c923}tmraEmpleado.fields.{cdfff844-7812-4d01-8ec3-5beff29b0fb5}fotografia',
+                    a!EXAMPLE_DOCUMENT_IMAGE()
+                  )
+                )
+                
+              ),
+              size: "SMALL",
+              style: "AVATAR"
+            ),
+            width: "ICON"
+          ),
+          a!gridColumn(
+            label: "Nº Empleado",
+            value: a!linkField(
+              links: {
+                a!dynamicLink(
+                  label: fv!row['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.relationships.{68cb95cc-f63f-4d1a-b290-8d30e056c923}tmraEmpleado.fields.{07e5897a-ae7d-47fe-b477-ec0d777c3fa5}nEmpleado'],
+                  value: true,
+                  saveInto: {
+                    local!mostrarTecnico,
+                    a!save(
+                      local!nEmpleado,
+                      fv!row['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.relationships.{68cb95cc-f63f-4d1a-b290-8d30e056c923}tmraEmpleado.fields.{07e5897a-ae7d-47fe-b477-ec0d777c3fa5}nEmpleado']
+                    ),
+                    a!save(
+                      local!empleado,
+                      rule!TMRA_ObtenerEmpleadoPorNEmpleado(local!nEmpleado)
+                    ),
+                    a!save(
+                      local!equipo,
+                      rule!TMRA_ObtenerEquipoPorId(
+                        fv!row['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.relationships.{ae63b25f-8217-4a54-8fc6-f0b9d999ec8f}tmraEquipo.fields.{248d68fd-3cf6-433d-b38a-c200cef88626}id']
+                      )
+                    ),
+                    a!save(
+                      local!tecnico,
+                      rule!TMRA_ObtenerTecnicoPorNEmpleado(
+                        fv!row['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.relationships.{68cb95cc-f63f-4d1a-b290-8d30e056c923}tmraEmpleado.fields.{07e5897a-ae7d-47fe-b477-ec0d777c3fa5}nEmpleado']
+                      )
+                    )
+                  }
+                )
+              }
+            ),
+            align: "CENTER"
+          ),
+          a!gridColumn(
+            label: "Nombre",
+            value: fv!row['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.relationships.{68cb95cc-f63f-4d1a-b290-8d30e056c923}tmraEmpleado.fields.{ea49ffaf-1db8-45a1-aa54-54fa8f543fd0}nombre'],
+            align: "CENTER"
+          ),
+          a!gridColumn(
+            label: "Apellidos",
+            value: fv!row['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.relationships.{68cb95cc-f63f-4d1a-b290-8d30e056c923}tmraEmpleado.fields.{a3d16573-1c20-4967-816e-7796933eb5ba}primerApellido'] & " " & fv!row['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.relationships.{68cb95cc-f63f-4d1a-b290-8d30e056c923}tmraEmpleado.fields.{80d68571-ab99-43b4-9948-8228ee24a7d9}segundoApellido'],
+            align: "CENTER"
+          
+          ),
+          a!gridColumn(
+            label: "Categoria",
+            value: fv!row['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.fields.{94788fe6-41e5-4c42-82e6-04ab04629fce}categoria'],
+            align: "CENTER"
+          ),
+          a!gridColumn(
+            label: "Especialidad",
+            value: fv!row['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.fields.{79910afd-e1e0-4061-93be-4dbcc1cf0422}especialidad'],
+            align: "CENTER"
+          ),
+          a!gridColumn(
+            label: "Equipo",
+            value: fv!row['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.relationships.{ae63b25f-8217-4a54-8fc6-f0b9d999ec8f}tmraEquipo.fields.{19d1ed70-76c0-4586-b6bd-a280270fa8c6}nombreequipo'],
+            align: "CENTER"
+          ),
+          a!gridColumn(
+            label: "Acciones",
+            align: "CENTER",
+            value: a!recordActionField_23r3(
+              actions: {
+                a!recordActionItem(
+                  action: 'recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.actions.{be2cbf83-41a5-4181-ba2f-0f78708fcb61}eliminarTecnico',
+                  identifier: fv!identifier
+                ),
+                
+                a!recordActionItem(
+                  action: 'recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.actions.{5ab3af0a-c4a2-410d-a29e-be2fba9f0d63}actualizarTecnico',
+                  identifier: fv!identifier
+                )
+              },
+              style: "SIDEBAR",
+              display: "ICON",
+              align: "CENTER"
+            )
+          )
+        },
+        validations: {},
+        refreshAfter: "RECORD_ACTION",
+        showSearchBox: true,
+        showRefreshButton: true,
+        recordActions: {
+          a!recordActionItem(
+            action: 'recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.actions.{53268a4d-215d-47c2-b8e4-1bc7ab35d1f7}anadirTecnico'
+          )
+        }
+      )
+    },
+    
+    
+    a!headerContentLayout(
+      header: {
+        rule!TMRA_CabeceraInformacionEmpleado(local!empleado)
+      },
+      contents: {
+        rule!TMRA_InformacionTecnicoSummary(
+          empleado: local!empleado,
+          equipo: local!equipo,
+          tecnico: local!tecnico
+        ),
+        a!buttonArrayLayout(
+          buttons: { 
+            a!buttonWidget_23r3(
+              label: "Volver", 
+              value: false,
+              saveInto: local!mostrarTecnico
+            ) },
+          align: "CENTER"
+        )
+      }
+    )
+  )
+)
