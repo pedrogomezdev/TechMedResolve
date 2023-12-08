@@ -29,7 +29,7 @@ Este repositorio contiene los componentes esenciales del proyecto, organizados e
 
 ## Visualización correcta del código
 
-Al ser código propio de Appian, las Expression Rules e Interfaces, se visualizarán no tienen una extensión con la que poder serguardadas, por lo que son archivos de texto plano. Para facilitar la visualización del código y su comprensión, se recomienda encarecidamente clonar este repositorio y abrir el código mediante la aplicación **Notepad++** teniendo previamente 
-instalado el siguiente plugin (requiere registro en Appian Community): https://community.appian.com/b/appmarket/posts/notepad-user-defined-language-for-appian
+Al ser código propio de Appian, las Expression Rules e Interfaces no tienen una extensión con la que poder serguardadas, por lo que son archivos de texto plano. Para facilitar la visualización del código y su comprensión, se recomienda encarecidamente clonar este repositorio y abrir el código mediante la aplicación **Notepad++** teniendo previamente 
+instalado el plugin que se ha facilitado en este repositorio. Para saber cómo instalar el plugin, se han dejado unas instrucciones.
 
 Página para la descarga de Notepad++ : https://notepad-plus-plus.org/downloads/
