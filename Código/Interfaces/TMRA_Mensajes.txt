@@ -1,0 +1,820 @@
+/* Interfaz para el sistema de mensajería interna. */
+
+a!localVariables(
+
+  local!nEmpleadoLoggeado: rule!TMRA_ObtenerEmpleadoPorUsername(user(loggedInUser(), "username"))['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{07e5897a-ae7d-47fe-b477-ec0d777c3fa5}nEmpleado'][1],
+  local!mensaje,
+  local!bandejaDeEntrada: true,
+  local!empleado,
+  local!equipo,
+  local!tecnico,
+  local!empHospital,
+  local!mostrar: "grid",
+  
+  a!match(
+    value: local!mostrar,
+    
+    equals: "grid",
+    then: {
+      a!sectionLayout(
+
+        contents: {
+          a!columnsLayout(
+            columns: {
+              a!columnLayout(
+                contents: {
+                  a!cardLayout(
+                    contents: {
+                      a!cardLayout(
+                        contents: {
+                          a!richTextDisplayField(
+                            value: {
+                              a!richTextItem(
+                                text: {
+                                  a!richTextIcon(
+                                    icon: "pen"
+                                  ),
+                                  "  MENSAJE NUEVO"
+                                },
+                                style: {
+                                  "STRONG"
+                                }
+                              )
+                            },
+                            align: "LEFT"
+
+                          )
+                        },
+                        link: a!startProcessLink(
+                          label: "Enviar mensaje",
+                          processModel: cons!TMRA_ENVIAR_MENSAJE,
+                          bannerMessage: "Acción completada"
+                        ),
+                        height: "AUTO",
+                        style: "INFO",
+                        shape: "ROUNDED",
+                        marginBelow: "STANDARD",
+
+                        showShadow: local!bandejaDeEntrada
+                      ),
+                      a!horizontalLine(),
+                      a!cardLayout(
+                        contents: {
+                          a!richTextDisplayField(
+                            value: {
+                              a!richTextItem(
+                                text: {
+                                  a!richTextIcon(
+                                    icon: "inbox"
+                                  ),
+                                  "  BANDEJA DE ENTRADA"
+                                },
+                                style: {
+                                  "STRONG"
+                                }
+                              )
+                            },
+                            align: "LEFT"
+
+                          )
+                        },
+                        link: a!dynamicLink(
+                          value: true,
+                          saveInto: local!bandejaDeEntrada
+                        ),
+                        height: "AUTO",
+                        style: if(
+                          local!bandejaDeEntrada,
+                          "ACCENT",
+                          "TRANSPARENT"
+                        ),
+                        shape: "ROUNDED",
+                        marginBelow: "STANDARD",
+
+                        showShadow: local!bandejaDeEntrada
+                      ),
+                      a!cardLayout(
+                        contents: {
+                          a!richTextDisplayField(
+                            value: {
+                              a!richTextItem(
+                                text: {
+                                  a!richTextIcon(
+                                    icon: "envelope-open-text"
+                                  ),
+                                  "  MENSAJES ENVIADOS"
+                                },
+                                style: {
+                                  "STRONG"
+                                }
+                              )
+                            },
+                            align: "LEFT"
+                          )
+                        },
+                        link: a!dynamicLink(
+                          value: false,
+                          saveInto: local!bandejaDeEntrada
+                        ),
+                        height: "AUTO",
+                        style: if(
+                          not(local!bandejaDeEntrada),
+                          "ACCENT",
+                          "TRANSPARENT"
+                        ),
+                        shape: "ROUNDED",
+                        marginBelow: "STANDARD",
+                        showShadow: not(local!bandejaDeEntrada)
+                      )
+                    },
+                    height: "AUTO",
+                    style: "TRANSPARENT",
+                    marginBelow: "STANDARD"
+                  )
+                },
+                width: "NARROW_PLUS"
+              ),
+              a!columnLayout(
+                contents: {
+                  a!cardLayout(
+                    contents: {
+
+                      a!gridField_23r3(
+                        label: "Mensajes entrantes",
+                        labelPosition: "ABOVE",
+                        emptyGridMessage: "- No hay mensajes - ",
+                        data: a!recordData(
+                          recordType: 'recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje',
+                          filters: a!queryLogicalExpression(
+                            operator: "AND",
+                            filters: {
+                              a!queryFilter(
+                                field: 'recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{2160427c-0aa9-416a-bb53-06d618d60fb5}activoRemitente',
+                                operator: "=",
+                                value: true
+                              ),
+                              a!queryFilter(
+                                field: 'recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{daf58adb-b2f3-4a79-86f5-7b73a9d9bba9}nEmpleadoDestinatarioFk',
+                                operator: "=",
+                                value: if(
+                                  a!isNullOrEmpty(local!nEmpleadoLoggeado),
+                                  0,
+                                  local!nEmpleadoLoggeado
+                                )
+                              )
+                            },
+                            ignoreFiltersWithEmptyValues: true
+                          )
+                        ),
+                        columns: {
+                          a!gridColumn(
+                            label: "De",
+                            sortField: 'recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{125bd80a-433d-4ca7-9119-662391382a9f}nEmpleadoRemitenteFk',               
+                            
+                            value: a!linkField(
+                              links: {
+                                a!dynamicLink(
+                                  label: rule!TMRA_ObtenerEmpleadoPorNEmpleado(
+                                    fv!row['recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{125bd80a-433d-4ca7-9119-662391382a9f}nEmpleadoRemitenteFk']
+                                  )['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{ea49ffaf-1db8-45a1-aa54-54fa8f543fd0}nombre'] & " " & rule!TMRA_ObtenerEmpleadoPorNEmpleado(
+                                    fv!row['recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{125bd80a-433d-4ca7-9119-662391382a9f}nEmpleadoRemitenteFk']
+                                  )['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{a3d16573-1c20-4967-816e-7796933eb5ba}primerApellido'] & " " & rule!TMRA_ObtenerEmpleadoPorNEmpleado(
+                                    fv!row['recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{125bd80a-433d-4ca7-9119-662391382a9f}nEmpleadoRemitenteFk']
+                                  )['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{80d68571-ab99-43b4-9948-8228ee24a7d9}segundoApellido'] & " - " & rule!TMRA_ObtenerEmpleadoPorNEmpleado(
+                                    fv!row['recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{125bd80a-433d-4ca7-9119-662391382a9f}nEmpleadoRemitenteFk']
+                                  )['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{2f088b8a-2ded-486d-b775-13240c790be6}username'],
+                                  value: rule!TMRA_ObtenerEmpleadoPorNEmpleado(
+                                    fv!row['recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{125bd80a-433d-4ca7-9119-662391382a9f}nEmpleadoRemitenteFk']
+                                  ),
+                                  saveInto: {
+                                    a!save(
+                                      local!empleado,
+                                      rule!TMRA_ObtenerEmpleadoPorNEmpleado(
+                                        fv!row['recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{125bd80a-433d-4ca7-9119-662391382a9f}nEmpleadoRemitenteFk']
+                                      )
+                                    ),
+
+
+                                    a!match(
+                                      value: local!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{6e6c21fc-54d1-4b66-b97f-4cde704c71d5}tipoEmpleadoFk'],
+
+                                      equals: 1,
+                                      then: {
+                                        a!save(local!mostrar, "supervisor")
+                                      },
+
+                                      equals: 2,
+                                      then: {
+                                        a!save(
+                                          local!tecnico,
+                                          rule!TMRA_ObtenerTecnicoPorNEmpleado(
+                                            local!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{07e5897a-ae7d-47fe-b477-ec0d777c3fa5}nEmpleado']
+                                          )
+                                        ),
+                                        a!save(
+                                          local!equipo,
+                                          rule!TMRA_ObtenerEquipoPorId(
+                                            local!tecnico['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.fields.{02c8e2cf-3f9a-4f56-9fb7-ba9874e50fff}idEquipoFk']
+                                          )
+                                        ),
+                                        a!save(local!mostrar, "tecnico")
+                                      },
+
+                                      equals: 3,
+                                      then: {
+                                        a!save(local!empHospital, rule!TMRA_ObtenerEmpHospitalPorNEmpleado(local!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{07e5897a-ae7d-47fe-b477-ec0d777c3fa5}nEmpleado'])),
+                                        a!save(local!mostrar, "empleado_hospital")
+                                      },
+
+                                      default: {}
+
+                                    )
+
+                                  }
+                                )
+
+                              }
+                            ),
+                            
+                            align: "START",
+                            width: "MEDIUM_PLUS"
+                          ),
+                          a!gridColumn(
+                            label: "Asunto",
+                            sortField: 'recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{38de1eb6-ec1c-48a8-868f-e636d793e48c}asunto',
+                            value: a!linkField(
+                              label: fv!row['recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{38de1eb6-ec1c-48a8-868f-e636d793e48c}asunto'],
+                              links: {
+                                a!dynamicLink(
+                                  label: fv!row['recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{38de1eb6-ec1c-48a8-868f-e636d793e48c}asunto'],
+                                  value: "mensaje",
+                                  saveInto: {
+                                    local!mostrar,
+                                    a!save(local!mensaje, fv!row)
+                                  }
+                                )
+                              }
+                            ),
+                            align: "CENTER"
+                          ),
+                          a!gridColumn(
+                            label: "Fecha Envio",
+                            sortField: 'recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{b1bdabf2-553a-41fc-b75f-e5995ba41998}fechaEnvio',
+                            value: text(fv!row['recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{b1bdabf2-553a-41fc-b75f-e5995ba41998}fechaEnvio'], "dd/mm/yyyy"),
+                            align: "CENTER",
+                            width: "NARROW_PLUS"
+                          ),
+
+                          a!gridColumn(
+                            width: "ICON",
+                            value: a!richTextDisplayField(
+                              value: a!richTextIcon(
+                                icon: "trash",
+                                color: "NEGATIVE",
+                                link: a!startProcessLink(
+                                  processModel: cons!TMRA_ELIMINAR_MENSAJE,
+                                  processParameters:{
+                                    mensaje: fv!row,
+                                    activoParaRemitente: false,
+                                  } 
+                                ) 
+                              )
+                            )
+                          ),
+
+                        },
+                        showWhen: local!bandejaDeEntrada,
+                        validations: {},
+                        refreshAfter: "RECORD_ACTION",
+                        showSearchBox: true,
+                        showRefreshButton: true
+                      ),
+                      a!gridField_23r3(
+                        label: "Mensajes enviados",
+                        labelPosition: "ABOVE",
+                        emptyGridMessage: "- No hay mensajes - ",
+                        data: a!recordData(
+                          recordType: 'recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje',
+                          filters: a!queryLogicalExpression(
+                            operator: "AND",
+                            filters: {
+                              a!queryFilter(
+                                field: 'recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{0a2602d4-29e3-4e81-baba-99db885bda12}activoDestinatario',
+                                operator: "=",
+                                value: true
+                              ),
+                              a!queryFilter(
+                                field: 'recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{125bd80a-433d-4ca7-9119-662391382a9f}nEmpleadoRemitenteFk',
+                                operator: "=",
+                                value: if(
+                                  a!isNullOrEmpty(local!nEmpleadoLoggeado),
+                                  0,
+                                  local!nEmpleadoLoggeado
+                                )
+                              )
+                            },
+                            ignoreFiltersWithEmptyValues: true
+                          )
+                        ),
+                        columns: {
+                          a!gridColumn(
+                            label: "Para",
+                            sortField: 'recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{125bd80a-433d-4ca7-9119-662391382a9f}nEmpleadoRemitenteFk',
+                            value: a!linkField(
+                              links: {
+                                a!dynamicLink(
+                                  label: rule!TMRA_ObtenerEmpleadoPorNEmpleado(
+                                    fv!row['recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{daf58adb-b2f3-4a79-86f5-7b73a9d9bba9}nEmpleadoDestinatarioFk']
+                                  )['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{ea49ffaf-1db8-45a1-aa54-54fa8f543fd0}nombre'] & " " & rule!TMRA_ObtenerEmpleadoPorNEmpleado(
+                                    fv!row['recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{daf58adb-b2f3-4a79-86f5-7b73a9d9bba9}nEmpleadoDestinatarioFk']
+                                  )['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{a3d16573-1c20-4967-816e-7796933eb5ba}primerApellido'] & " " & rule!TMRA_ObtenerEmpleadoPorNEmpleado(
+                                    fv!row['recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{daf58adb-b2f3-4a79-86f5-7b73a9d9bba9}nEmpleadoDestinatarioFk']
+                                  )['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{80d68571-ab99-43b4-9948-8228ee24a7d9}segundoApellido'] & " - " & rule!TMRA_ObtenerEmpleadoPorNEmpleado(
+                                    fv!row['recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{daf58adb-b2f3-4a79-86f5-7b73a9d9bba9}nEmpleadoDestinatarioFk']
+                                  )['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{2f088b8a-2ded-486d-b775-13240c790be6}username'],
+                                  value: rule!TMRA_ObtenerEmpleadoPorNEmpleado(
+                                    fv!row['recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{daf58adb-b2f3-4a79-86f5-7b73a9d9bba9}nEmpleadoDestinatarioFk']
+                                  ),
+                                  saveInto: {
+                                    a!save(
+                                      local!empleado,
+                                      rule!TMRA_ObtenerEmpleadoPorNEmpleado(
+                                        fv!row['recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{daf58adb-b2f3-4a79-86f5-7b73a9d9bba9}nEmpleadoDestinatarioFk']
+                                      )
+                                    ),
+                                    
+                                    
+                                    a!match(
+                                      value: local!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{6e6c21fc-54d1-4b66-b97f-4cde704c71d5}tipoEmpleadoFk'],
+                                      
+                                      equals: 1,
+                                      then: {
+                                        a!save(local!mostrar, "supervisor")
+                                      },
+                                      
+                                      equals: 2,
+                                      then: {
+                                        a!save(
+                                          local!tecnico,
+                                          rule!TMRA_ObtenerTecnicoPorNEmpleado(
+                                            local!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{07e5897a-ae7d-47fe-b477-ec0d777c3fa5}nEmpleado']
+                                          )
+                                        ),
+                                        a!save(
+                                          local!equipo,
+                                          rule!TMRA_ObtenerEquipoPorId(
+                                            local!tecnico['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.fields.{02c8e2cf-3f9a-4f56-9fb7-ba9874e50fff}idEquipoFk']
+                                          )
+                                        ),
+                                        a!save(local!mostrar, "tecnico")
+                                      },
+                                      
+                                      equals: 3,
+                                      then: {
+                                        a!save(local!empHospital, rule!TMRA_ObtenerEmpHospitalPorNEmpleado(local!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{07e5897a-ae7d-47fe-b477-ec0d777c3fa5}nEmpleado'])),
+                                        a!save(local!mostrar, "empleado_hospital")
+                                      },
+                                      
+                                      default: {}
+                                      
+                                    )
+                                    
+                                  }
+                                )
+                              
+                              }
+                            ),
+                            align: "START",
+                            width: "WIDE"
+                          ),
+                          a!gridColumn(
+                            label: "Asunto",
+                            sortField: 'recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{38de1eb6-ec1c-48a8-868f-e636d793e48c}asunto',
+                            value: a!linkField(
+                              label: fv!row['recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{38de1eb6-ec1c-48a8-868f-e636d793e48c}asunto'],
+                              links: {
+                                a!dynamicLink(
+                                  label: fv!row['recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{38de1eb6-ec1c-48a8-868f-e636d793e48c}asunto'],
+                                  value: "mensaje",
+                                  saveInto: {
+                                    local!mostrar,
+                                    a!save(local!mensaje, fv!row)
+                                  }
+                                )
+                              }
+                            ),
+                            align: "CENTER"
+                          ),
+                          a!gridColumn(
+                            label: "Fecha Envio",
+                            sortField: 'recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{b1bdabf2-553a-41fc-b75f-e5995ba41998}fechaEnvio',
+                            value: text(fv!row['recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{b1bdabf2-553a-41fc-b75f-e5995ba41998}fechaEnvio'], "dd/mm/yyyy"),
+                            align: "CENTER",
+                            width: "NARROW_PLUS"
+                          ),
+
+                          a!gridColumn(
+                            width: "ICON",
+                            value: a!richTextDisplayField(
+                              value: a!richTextIcon(
+                                icon: "trash",
+                                color: "NEGATIVE",
+                                link: a!startProcessLink(
+                                  processModel: cons!TMRA_ELIMINAR_MENSAJE,
+                                  processParameters:{
+                                    mensaje: fv!row,
+                                    activoParaDestinatario: false,
+                                  } 
+                                ) 
+                              )
+                            )
+                          )
+                        },
+                        showWhen: not(local!bandejaDeEntrada),
+                        validations: {},
+                        refreshAfter: "RECORD_ACTION",
+                        showSearchBox: true,
+                        showRefreshButton: true
+                      )
+                    },
+                    height: "AUTO",
+                    style: "TRANSPARENT",
+                    marginBelow: "STANDARD"
+                  )
+                },
+                width: "5X"
+              )
+            }
+          )
+
+
+        }
+      )
+    },
+    
+    equals: "mensaje",
+    then: a!sectionLayout(
+      contents: {
+        a!sideBySideLayout(
+          items: {
+            a!sideBySideItem(
+              item: a!richTextDisplayField(
+                label: "Rich Text",
+                labelPosition: "COLLAPSED",
+                value: {
+                  a!richTextIcon(icon: "long-arrow-left", color: "#3d85c6")
+                },
+                align: "RIGHT"
+              ),
+              width: "MINIMIZE"
+            ),
+            a!sideBySideItem(
+              item: a!linkField(
+                labelPosition: "COLLAPSED",
+                links: a!dynamicLink(
+                  label: if(
+                    local!bandejaDeEntrada,
+                    "Volver a la bandeja de entrada",
+                    "Volver a la bandeja de salida"
+                  ),
+                  value: "grid",
+                  saveInto: local!mostrar
+                )
+              )
+            )
+          }
+        ),
+        a!cardLayout(
+          contents: {
+            a!richTextDisplayField(
+              labelPosition: "COLLAPSED",
+              value: {
+                a!richTextItem(
+                  text: {
+                    local!mensaje['recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{38de1eb6-ec1c-48a8-868f-e636d793e48c}asunto']
+                  },
+                  size: "MEDIUM_PLUS",
+                  style: {
+                    "STRONG"
+                  }
+                )
+              }
+            ),
+            a!horizontalLine(),
+            a!sideBySideLayout(
+              items: {
+                a!sideBySideItem(
+                  item: a!imageField(
+                    label: "",
+                    labelPosition: "ABOVE",
+                    images: {
+
+                      a!documentImage(
+                        document:  if(
+                          or(a!isNullOrEmpty(rule!TMRA_ObtenerEmpleadoPorNEmpleado(
+                            local!mensaje['recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{125bd80a-433d-4ca7-9119-662391382a9f}nEmpleadoRemitenteFk']
+                          )['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{cdfff844-7812-4d01-8ec3-5beff29b0fb5}fotografia']), rule!TMRA_ObtenerEmpleadoPorNEmpleado(
+                            local!mensaje['recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{125bd80a-433d-4ca7-9119-662391382a9f}nEmpleadoRemitenteFk']
+                          )['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{cdfff844-7812-4d01-8ec3-5beff29b0fb5}fotografia'] = 0),
+                          a!EXAMPLE_DOCUMENT_IMAGE(),
+                          index(
+                            rule!TMRA_ObtenerEmpleadoPorNEmpleado(
+                              local!mensaje['recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{125bd80a-433d-4ca7-9119-662391382a9f}nEmpleadoRemitenteFk']
+                            ),
+                            'recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{cdfff844-7812-4d01-8ec3-5beff29b0fb5}fotografia',
+                            a!EXAMPLE_DOCUMENT_IMAGE()
+                          )
+                        )
+                      )
+                    },
+                    size: "EXTRA_SMALL",
+                    isThumbnail: false,
+                    style: "AVATAR"
+                  ),
+                  width: "MINIMIZE"
+                ),
+                
+                
+                
+                a!sideBySideItem(
+                  item: a!richTextDisplayField(
+                    value: a!richTextItem(
+                      text:rule!TMRA_ObtenerEmpleadoPorNEmpleado(
+                        local!mensaje['recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{125bd80a-433d-4ca7-9119-662391382a9f}nEmpleadoRemitenteFk']
+                      )['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{ea49ffaf-1db8-45a1-aa54-54fa8f543fd0}nombre'] & " " & rule!TMRA_ObtenerEmpleadoPorNEmpleado(
+                        local!mensaje['recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{125bd80a-433d-4ca7-9119-662391382a9f}nEmpleadoRemitenteFk']
+                      )['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{a3d16573-1c20-4967-816e-7796933eb5ba}primerApellido'] & " " & rule!TMRA_ObtenerEmpleadoPorNEmpleado(
+                        local!mensaje['recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{125bd80a-433d-4ca7-9119-662391382a9f}nEmpleadoRemitenteFk']
+                      )['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{80d68571-ab99-43b4-9948-8228ee24a7d9}segundoApellido'] & " - " & rule!TMRA_ObtenerEmpleadoPorNEmpleado(
+                        local!mensaje['recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{125bd80a-433d-4ca7-9119-662391382a9f}nEmpleadoRemitenteFk']
+                      )['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{2f088b8a-2ded-486d-b775-13240c790be6}username'],
+                      style: "STRONG"
+                    )
+                  )
+                )
+
+              },
+              alignVertical: "MIDDLE"
+            ),
+            a!horizontalLine(),
+            a!cardLayout(
+              contents: {
+                a!paragraphField(
+                  label: "",
+                  labelPosition: "ABOVE",
+                  value: local!mensaje['recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{31a0dd54-a06f-4be0-b707-1b04049e500d}cuerpoMensaje'],
+                  saveInto: {},
+                  refreshAfter: "UNFOCUS",
+                  height: "MEDIUM",
+                  readOnly: true,
+                  validations: {}
+                )
+              },
+              height: "AUTO",
+              style: "#cde6eb",
+              marginBelow: "STANDARD",
+              showBorder: false
+            ),
+            a!horizontalLine(),
+            
+
+            if(
+              local!mensaje['recordType!{880d26e6-9d0c-44c0-9d3c-52bdbda14ee9}TMRA Mensaje.fields.{125bd80a-433d-4ca7-9119-662391382a9f}nEmpleadoRemitenteFk'] = local!nEmpleadoLoggeado,
+              {},
+              a!columnsLayout(
+                columns: {
+                  a!columnLayout(),
+                  a!columnLayout(
+                    width: "NARROW",
+                    contents: a!cardLayout(
+                      contents: {
+                        a!richTextDisplayField(
+                          value: {
+                            a!richTextItem(
+                              text: {
+                                a!richTextIcon(icon: "reply"),
+                                "  RESPONDER"
+                              },
+                              style: { "STRONG" }
+                            )
+                          },
+                          align: "CENTER"
+                        )
+                      },
+                      link: a!startProcessLink(
+                        label: "Enviar mensaje",
+                        processModel: cons!TMRA_ENVIAR_MENSAJE,
+                        processParameters: {
+                          esRespuesta: true,
+                          mensajeAResponder: local!mensaje
+                        },
+                        bannerMessage: "Acción completada"
+                      ),
+                      height: "AUTO",
+                      style: "INFO",
+                      shape: "ROUNDED",
+                      marginBelow: "STANDARD",
+                      showShadow: local!bandejaDeEntrada
+                    )
+                  ),
+                  a!columnLayout()
+                }
+              ),
+            )
+          },
+          height: "AUTO",
+          style: "#f0f9fb",
+          padding: "STANDARD",
+          marginBelow: "STANDARD",
+          showShadow: true
+        )
+      }
+    ),
+    
+    equals: "tecnico",
+    then: a!headerContentLayout(
+      header: {
+        rule!TMRA_CabeceraInformacionEmpleado(local!empleado)
+      },
+      contents: {
+        rule!TMRA_InformacionTecnicoSummary(
+          empleado: local!empleado,
+          equipo: local!equipo,
+          tecnico: local!tecnico
+        ),
+        a!buttonArrayLayout(
+          buttons: {
+            a!buttonWidget_23r3(
+              label: "Volver",
+              value: "grid",
+              saveInto: local!mostrar
+            )
+          },
+          align: "CENTER"
+        )
+      }
+    ),
+    
+    equals: "empleado_hospital",
+    then: a!headerContentLayout(
+      header: {
+        rule!TMRA_CabeceraInformacionEmpleado(local!empleado)
+      },
+      contents: {
+        rule!TMRA_InformacionEmpleadoHospitalSummary(
+          empleado: local!empleado,
+          empHospital: local!empHospital
+        ),
+        a!buttonArrayLayout(
+          buttons: {
+            a!buttonWidget_23r3(
+              label: "Volver",
+              value: "grid",
+              saveInto: local!mostrar
+            )
+          },
+          align: "CENTER"
+        )
+      }
+    ),
+    
+    equals: "supervisor",
+    then: a!headerContentLayout(
+      header: {
+        rule!TMRA_CabeceraInformacionEmpleado(local!empleado)
+      },
+      contents: {
+        a!sectionLayout(
+          label: " Información del técnico",
+          labelIcon: "info-circle",
+          contents: {
+            a!sideBySideLayout(
+              items: {
+                a!sideBySideItem(
+                  item: a!textField(
+                    label: "Nº de empleado:",
+                    labelPosition: "ADJACENT",
+                    value: local!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{07e5897a-ae7d-47fe-b477-ec0d777c3fa5}nEmpleado'],
+                    readOnly: true
+                  )
+                ),
+                a!sideBySideItem(
+                  item: a!textField(
+                    label: "Nombre:",
+                    labelPosition: "ADJACENT",
+                    value: local!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{ea49ffaf-1db8-45a1-aa54-54fa8f543fd0}nombre'],
+                    saveInto: {},
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                ),
+                a!sideBySideItem(
+                  item: a!textField(
+                    label: "Apellidos:",
+                    labelPosition: "ADJACENT",
+                    value: local!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{a3d16573-1c20-4967-816e-7796933eb5ba}primerApellido'] & " " & local!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{80d68571-ab99-43b4-9948-8228ee24a7d9}segundoApellido'],
+                    saveInto: {},
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                ),
+                
+              }
+            ),
+            a!sideBySideLayout(
+              items: {
+                a!sideBySideItem(
+                  item: a!textField(
+                    label: "Username:",
+                    labelPosition: "ADJACENT",
+                    value: local!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{2f088b8a-2ded-486d-b775-13240c790be6}username'],
+                    saveInto: {},
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                ),
+                a!sideBySideItem(
+                  item: a!textField(
+                    label: "Teléfono:",
+                    labelPosition: "ADJACENT",
+                    value: local!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{ca7bf85e-51ac-4967-b8f2-f1ac6dc6cdb6}telefono'],
+                    saveInto: {},
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                ),
+                a!sideBySideItem(
+                  item: a!textField(
+                    label: "Tfno. de emergencia:",
+                    labelPosition: "ADJACENT",
+                    value: if(a!isNullOrEmpty(local!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{e770c2c3-e8da-4b21-9bfa-c7c827ae6401}telefonoEmergencia']), " - Sin teléfono de emergencia - ", local!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{e770c2c3-e8da-4b21-9bfa-c7c827ae6401}telefonoEmergencia']),
+                    saveInto: {},
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                ),
+               
+              }
+            ),
+            a!sideBySideLayout(
+              items: {
+                a!sideBySideItem(
+                  item: a!textField(
+                    label: "Email:",
+                    labelPosition: "ADJACENT",
+                    value: local!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{dc7111bc-1917-4bb6-9f39-a00714968b9d}email'],
+                    saveInto: {},
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                ),
+                a!sideBySideItem(
+                  item: a!textField(
+                    label: "Horario trabajo:",
+                    labelPosition: "ADJACENT",
+                    value: local!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{5be7c513-5cea-4174-89da-2b7f4b4bf730}horarioTrabajo'],
+                    saveInto: {},
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                ),
+                
+                a!sideBySideItem(
+                  item: a!textField(
+                    label: "",
+                    labelPosition: "ADJACENT",
+                    saveInto: {},
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                )
+              }
+            )
+          },
+          divider: "ABOVE"
+        ),
+        a!buttonArrayLayout(
+          buttons: {
+            a!buttonWidget_23r3(
+              label: "Volver",
+              value: "grid",
+              saveInto: local!mostrar
+            )
+          },
+          align: "CENTER"
+        )
+      }
+    ),
+    
+    default: {}
+  )
+
+)

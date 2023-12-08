@@ -1,0 +1,62 @@
+/* Grid que muestra las máquinas que han sido añadidas al sistema tras la subida de la plantilla de excel. */
+
+{
+  if(
+    a!isNotNullOrEmpty(ri!maquinasCreadas),
+    a!gridField_23r3(
+      label: "Máquinas añadidas",
+      labelPosition: "ABOVE",
+      data: ri!maquinasCreadas,
+      columns: {
+        a!gridColumn(
+          label: "Nombre",
+          value: fv!row['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{49395354-b59c-4d48-8cb7-b2bd1c740f8c}nombre']
+        ),
+        a!gridColumn(
+          label: "Estado",
+          value: fv!row['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{fff97e62-ff27-415c-94c1-af562404ecb8}estado']
+        ),
+        a!gridColumn(
+          label: "Marca",
+          value: fv!row['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{f7745e36-998c-4218-8b50-0f76f12145ba}marca']
+        ),
+        a!gridColumn(
+          label: "Modelo",
+          value: fv!row['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{4042bdf5-9551-4b97-8cf1-9fa7475ff423}modelo']
+        ),
+        a!gridColumn(
+          label: "Nº de serie",
+          value: fv!row['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{56f17aea-a4d7-4a7b-a518-ee01cc73eb9e}nSerie']
+        )
+      }
+    ),
+    a!sectionLayout(
+      contents: {
+        a!richTextDisplayField(
+          value: a!richTextItem(
+            text: "Error al añadir las máquinas",
+            size: "MEDIUM_PLUS",
+            style: "STRONG"
+          )
+        ),
+        a!horizontalLine(),
+        a!paragraphField(
+          value: "No se han podido añadir las máquinas debido a que uno o más campos obligatorios no han sido rellenados correctamente.",
+          readOnly: true
+        )
+      }
+    )
+  ),
+  a!buttonArrayLayout(
+    buttons: {
+      a!buttonWidget_23r3(
+        label: "FINALIZAR",
+        icon: "check",
+        submit: true,
+        style: "PRIMARY"
+      )
+    },
+    align: "CENTER",
+    marginAbove: "MORE"
+  )
+}

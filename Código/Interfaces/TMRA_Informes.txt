@@ -1,0 +1,65 @@
+/* Interfaz para la muestra de informes a los supervisores. */
+
+a!localVariables(
+  local!opcion,
+  {
+    a!richTextDisplayField(
+      value: a!richTextItem(
+        text: "¿Qué informe desea visualizar?",
+        color: "ACCENT",
+        size: "MEDIUM_PLUS",
+        style: "STRONG"
+      ),
+      showWhen: a!isNullOrEmpty(local!opcion),
+      align: "CENTER"
+    ),
+    if(
+      a!isNullOrEmpty(local!opcion),
+      a!cardChoiceField(
+
+      data: {
+        a!map(
+          id: 1,
+          icon: "microchip",
+          primaryText: "Máquinas"
+        ),
+        a!map(
+          id: 2,
+          icon: "file-invoice",
+          primaryText: "Partes"
+        )
+      },
+      cardTemplate: a!cardTemplateTile(
+        id: fv!data.id,
+        primaryText: fv!data.primaryText,
+        icon: fv!data.icon
+      ),
+      saveInto: local!opcion,
+      maxSelections: 1,
+        align: "CENTER",
+      validations: {}
+    ),
+    {}),
+    
+      a!match(
+        value: local!opcion[1],
+        equals: 1,
+        then: rule!TMRA_InformeMaquinas(),
+        equals: 2,
+        then: rule!TMRA_InformePartes(),
+        
+        default: {}
+
+      ),
+    a!buttonArrayLayout(
+      buttons: a!buttonWidget_23r3(
+        label: "VOLVER AL SELECTOR DE INFORMES",
+        icon: "reply",
+        value: null,
+        saveInto: local!opcion,
+        showWhen: a!isNotNullOrEmpty(local!opcion)
+      ),
+      align: "CENTER"
+    )
+  }
+)

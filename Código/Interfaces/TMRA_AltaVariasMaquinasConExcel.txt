@@ -1,0 +1,94 @@
+/* Interfaz que permite la subida de una plantilla de un excel para la creación de máquinas. */
+a!formLayout(
+  label: "Carga de excel",
+  contents: {
+    a!paragraphField(
+      labelPosition: "ABOVE",
+      value: "Descarga la plantilla en el enlace que dejamos a continuación y rellénala. Una vez hecho esto, súbela cumplimentada. Esto dará de alta todas las máquinas de dicha plantilla en nuestro sistema.",
+      saveInto: {},
+      refreshAfter: "UNFOCUS",
+
+      height: "MEDIUM",
+      readOnly: true,
+      validations: {}
+    ),
+    
+    a!columnsLayout(
+      marginAbove: "STANDARD",
+      alignVertical: "BOTTOM",
+      spacing: "DENSE",
+      columns: {
+        a!columnLayout(
+          width: "MEDIUM_PLUS",
+          contents: {
+            a!fileUploadField(
+              labelPosition: "COLLAPSED",
+              placeholder: "Carga tu archivo de excel",
+              target: cons!TMRA_PLANTILLA_DE_SUBIDA_DE_MAQUINAS_CUMPLIMENTADAS,
+              maxSelections: 1,
+              value: ri!documentoExcel,
+              saveInto: ri!documentoExcel,
+              validations: {
+                if(
+                  fv!files.extension <> "xlsx",
+                  "Tiene que ser un archivo excel",
+                  {}
+                )
+              }
+            )
+          }
+        ),
+        a!columnLayout(
+          contents: {
+            a!richTextDisplayField(
+              labelPosition: "COLLAPSED",
+              value: {
+                a!richTextIcon(
+                  icon: "download",
+                  link: a!documentDownloadLink(
+                    document: cons!TMRA_PLANTILLA_SUBIDA_MAQUINAS
+                  ),
+                  linkStyle: "STANDALONE"
+                ),
+                a!richTextItem(
+                  text: { "Descargar plantilla" },
+                  link: a!documentDownloadLink(
+                    document: cons!TMRA_PLANTILLA_SUBIDA_MAQUINAS
+                  ),
+                  linkStyle: "STANDALONE"
+                )
+              }
+            )
+          }
+        ),
+
+      }
+    ),
+
+  },
+  buttons: a!buttonLayout(
+    primaryButtons: {
+      a!buttonWidget_23r3(
+        label: "Cargar datos",
+        icon: "upload",
+        loadingIndicator: true,
+        submit: true,
+        style: "PRIMARY",
+        disabled: a!isNullOrEmpty(ri!documentoExcel)
+      )
+    },
+    secondaryButtons: {
+      a!buttonWidget_23r3(
+        label: "Cancelar",
+        icon: "times",
+        loadingIndicator: true,
+        submit: true,
+        value: true,
+        saveInto: ri!cancelar,
+        style: "DESTRUCTIVE",
+        validate: false,
+        disabled: {}
+      )
+    }
+  )
+)

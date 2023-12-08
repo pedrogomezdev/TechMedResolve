@@ -1,0 +1,109 @@
+/* Interfaz que muestra los datos del empleado del hospital que abrió una incidencia. */
+
+a!localVariables(
+  local!empleado: rule!TMRA_ObtenerEmpleadoPorNEmpleado(
+    ri!empleadoHospital['recordType!{02acd5dc-7ec9-4237-8e90-70914889db6f}TMRA Empleado Hospital.fields.{694bea17-f900-45e7-96b6-01c3331c52c4}nEmpleadoFk']
+  ),
+  {
+    a!sectionLayout(
+      label: "Datos del usuario que abrió la incidencia",
+      labelIcon: "user",
+      contents: {
+        a!cardLayout(
+          contents: {
+            a!sideBySideLayout(
+              items: {
+                a!sideBySideItem(
+                  item: a!textField(
+                    label: "Nº de empleado: ",
+                    labelPosition: "ADJACENT",
+                    value: ri!empleadoHospital['recordType!{02acd5dc-7ec9-4237-8e90-70914889db6f}TMRA Empleado Hospital.fields.{694bea17-f900-45e7-96b6-01c3331c52c4}nEmpleadoFk'],
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                ),
+                a!sideBySideItem(
+                  item: a!textField(
+                    label: "Nombre completo:",
+                    labelPosition: "ADJACENT",
+                    value: local!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{ea49ffaf-1db8-45a1-aa54-54fa8f543fd0}nombre'] & " " & local!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{a3d16573-1c20-4967-816e-7796933eb5ba}primerApellido'] & " " & local!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{80d68571-ab99-43b4-9948-8228ee24a7d9}segundoApellido'],
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                ),
+                a!sideBySideItem(
+                  item: a!textField(
+                    label: "Puesto:",
+                    labelPosition: "ADJACENT",
+                    value: ri!empleadoHospital['recordType!{02acd5dc-7ec9-4237-8e90-70914889db6f}TMRA Empleado Hospital.fields.{2dcf56ab-7112-45e8-9189-0a869aecccca}puesto'],
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                ),
+                a!sideBySideItem(
+                  item: a!textField(
+                    label: "Área:",
+                    labelPosition: "ADJACENT",
+                    value: ri!empleadoHospital['recordType!{02acd5dc-7ec9-4237-8e90-70914889db6f}TMRA Empleado Hospital.fields.{89a691c0-7bbe-4898-ada9-dcbede6e810a}area'],
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                )
+              }
+            ),
+            a!sideBySideLayout(
+              items: {
+                a!sideBySideItem(
+                  item: a!textField(
+                    label: "Teléfono:",
+                    labelPosition: "ADJACENT",
+                    value: local!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{ca7bf85e-51ac-4967-b8f2-f1ac6dc6cdb6}telefono'],
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                ),
+                a!sideBySideItem(
+                  item: a!textField(
+                    label: "Tfno. emergencia:",
+                    labelPosition: "ADJACENT",
+                    value: local!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{e770c2c3-e8da-4b21-9bfa-c7c827ae6401}telefonoEmergencia'],
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                ),
+                a!sideBySideItem(
+                  item: a!textField(
+                    label: "Correo electrónico:",
+                    labelPosition: "ADJACENT",
+                    value: local!empleado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{dc7111bc-1917-4bb6-9f39-a00714968b9d}email'],
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                ),
+                a!sideBySideItem(
+                  item: a!textField(
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                )
+              }
+            )
+          },
+          height: "AUTO",
+          style: "INFO",
+          marginBelow: "STANDARD"
+        )
+      },
+      isCollapsible: true
+    )
+    
+  }
+)

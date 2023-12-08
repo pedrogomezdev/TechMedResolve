@@ -1,0 +1,72 @@
+/* Grid con las tareas del técnico loggeado. */
+
+a!localVariables(
+  local!query: todatasubset(rule!TMRA_ObtenerTareasTecnicoLoggeado().data),
+
+  {
+    a!sectionLayout(
+      label: "Lista de tareas",
+      contents: {
+        a!gridField_23r3(
+          data:local!query.data,
+          refreshInterval: 0.5,
+          columns: {
+            a!gridColumn(label: "ID", value: fv!row.c4),
+            a!gridColumn(
+              label: "Nombre de la tarea", 
+              value: a!linkField(
+                links: a!processTaskLink(label: fv!row.c0, task: fv!row.c4)
+              )
+            ),
+            a!gridColumn(
+              label: "Estado",
+              value: a!match(
+                value: cons!TMRA_ESTADOS_TAREAS[(fv!row.c1) + 1],
+                
+                equals: cons!TMRA_ESTADOS_TAREAS[1],
+                then: a!richTextDisplayField(
+                  value: {
+                    a!richTextIcon(icon: "user-o", color: "#666666"),
+                    a!richTextItem(
+                      text: "  " & cons!TMRA_ESTADOS_TAREAS[1]
+                    )
+                  }
+                ),
+                  
+                  
+                
+                equals: cons!TMRA_ESTADOS_TAREAS[2],
+
+                then: a!richTextDisplayField(
+                  value: {
+                    a!richTextIcon(icon: "user-check", color: "ACCENT"),
+                    a!richTextItem(
+                      text: "  " & cons!TMRA_ESTADOS_TAREAS[2]
+                    )
+                  }
+                ),
+                
+                
+                default: cons!TMRA_ESTADOS_TAREAS[(fv!row.c1) + 1]
+              )
+            ),
+
+            /*cons!TMRA_ESTADOS_TAREAS[(fv!row.c1)+1]),*/
+            a!gridColumn(label: "Técnico asignado", value: user(fv!row.c5, "username")),
+            a!gridColumn(label: "Fecha de creación", value: text(fv!row.c3, "dd/mm/yyyy"))
+            
+          },
+          emptyGridMessage: " - No tiene tareas pendientes - ",
+          pageSize: 15,
+          initialSorts: {
+            a!sortInfo(
+              field: "c3", 
+              ascending: false
+            ) 
+          }
+          
+        )
+      }
+    )
+  }
+)

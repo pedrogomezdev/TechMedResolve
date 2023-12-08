@@ -1,0 +1,88 @@
+/* Interfaz que muestra un grid con una simulación de mensajes extraídos de una API para mostrar un ejemplo de una integración. */
+
+a!localVariables(
+  local!comentarios: rule!TMRA_obtenerComentarios(null),
+  local!email : "",
+
+  {
+    a!sectionLayout(
+      label: "Mensajes externos",
+      contents: {
+        a!columnsLayout(
+          columns: {
+
+            a!columnLayout(
+              contents: {
+                a!dropdownField(
+                  label: "Email:",
+                  labelPosition: "ABOVE",
+                  placeholder: "--- Selecciona el email ---",
+                  choiceLabels: local!comentarios.result.body.email,
+                  choiceValues: local!comentarios.result.body.email,
+                  value: local!email,
+                  saveInto: local!email,
+                  searchDisplay: "AUTO",
+                  validations: {}
+                )
+              }
+            ),
+            a!columnLayout(
+              contents: {},
+              width: ""
+            ),
+            a!columnLayout(
+              contents: {}
+            )
+          }
+        ),
+        a!buttonArrayLayout(
+          buttons: {
+            a!buttonWidget_23r3(
+              label: " Quitar filtro",
+              icon: "window-close-o",
+              iconPosition: "START",
+              value: null,
+              saveInto: local!email,
+              size: "STANDARD",
+              width: "MINIMIZE",
+              style: "LINK"
+            )
+          },
+          align: "START"
+        ),a!gridField_23r3(
+          label: "",
+          labelPosition: "ABOVE",
+          emptyGridMessage: "No hay mensajes para mostrar",
+          data: if(
+            condition: a!isNullOrEmpty(local!email),
+            valueIfTrue: local!comentarios.result.body,
+            valueIfFalse: rule!TMRA_obtenerComentarios(local!email).result.body
+          ),
+          columns: {
+            a!gridColumn(
+              label: "",
+              value: fv!row.id
+            ),
+            
+            a!gridColumn(
+              label: "De",
+              value: fv!row.email
+            ),
+            a!gridColumn(
+              label: "Asunto",
+              value: fv!row.name
+            ),
+            a!gridColumn(
+              label: "Mensaje",
+              value: fv!row.body
+            )
+          },
+          selectable: false,
+          validations: {},
+          spacing: "STANDARD",
+          borderStyle: "STANDARD"
+        )}
+    )
+  }
+
+)

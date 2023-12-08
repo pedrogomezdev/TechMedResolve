@@ -1,0 +1,401 @@
+/* Interfaz de bienvenida a la aplicación para los técnicos de electromedicina del hospital. En esta interfaz se indica la utilidad de la aplicación y de los botones del menú. */
+
+a!headerContentLayout(
+  header: {
+    /* Como cabecera, muestra una tarjeta con la imagen del logo de la aplicación.*/
+    a!cardLayout(
+      contents: {
+        a!imageField(
+          label: "",
+          labelPosition: "ABOVE",
+          images: {
+            a!documentImage(
+              document: cons!TMRA_LOGO
+            )
+          },
+          size: "LARGE",
+          isThumbnail: false,
+          style: "STANDARD",
+          align: "CENTER"
+        )
+      },
+      height: "AUTO",
+      style: "#ffffff",
+      marginBelow: "NONE",
+      showBorder: true
+    )
+  },
+  contents: {
+
+    a!richTextDisplayField(
+      labelPosition: "COLLAPSED",
+      value:  {
+        a!richTextItem(
+          /* Indicamos el nombre de usuario de quién ha iniciado sesión.*/
+          text: "Has iniciado sesión como " & user(loggedInUser(), "username"),
+          size: "MEDIUM",
+          style: "STRONG"
+        ),
+        char(10),
+        char(10),
+        a!richTextItem(
+          /* Saludamos al usuario indicando su nombre y le explicamos la funcionalidad de la aplicación. */
+          text: "Bienvenido/a " & user(loggedInUser(), "firstName") & ". Esta aplicación está diseñada exclusivamente para los técnicos de electromedicina del hospital. Te brindará la capacidad de gestionar los partes de reparación generados por los empleados en relación con las incidencias en las diversas máquinas de electromedicina. Disfrutarás de un sistema de tareas conveniente que te mostrará de inmediato los partes asignados a ti." & char(10) & char(10) & "Además, podrás visualizar todos los partes realizados o en curso hasta la fecha." & char(10) & char(10) & "Adicionalmente, cuenta con un sistema de mensajería interna que facilita la comunicación con otros técnicos, supervisores y empleados del hospital cuando lo necesites. ¡Aprovecha al máximo esta herramienta para optimizar tu trabajo!",
+          size: "MEDIUM"
+        ),
+        /* Salto de linea. */
+        char(10),
+        char(10),
+
+        /* Hacemos uso de nuestra expression rule que obtiene el tipo de pantalla, y en función del tipo que sea, le indicamos al usuario dónde se ubican los botones del menú: */
+        a!richTextItem(
+          text: if(
+            or(
+              rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[1],
+              rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[2],
+              rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[3]
+            ),
+            "En la parte inferior de esta ventana puedes ver un menú con tres botones claramente diferenciados: ",
+            "En la parte izquierda de esta ventana puedes ver un menú con tres botones claramente diferenciados: "
+          ),
+          size: "MEDIUM"
+
+        ),
+
+        /* Ponemos este texto en negrita */
+        a!richTextItem(
+          text: "Inicio, Mis incidencias y Mensajes. ",
+          size: "MEDIUM",
+          style: "STRONG"
+
+        ),
+
+
+        a!richTextItem(
+          text: "Al pulsar sobre ellos se nos dirigirá a la ventana correspondiente a una funcionalidad específica de esta aplicación. A continuación se explica el funcionamiento de cada una de ellas:",
+          size: "MEDIUM"
+
+        ),
+
+        char(10),
+        char(10)
+
+      }
+
+    ),
+
+    /* 
+
+    Creamos un layout formado por tres columnas. Cada columna tendrá una tarjeta con otra tarjeta en su interior y un  texto.
+      - La tarjeta interior almacenará un icono con el símbolo de uno de los botones del menú seguido del nombre de dicho botón.
+      - El texto explica la utilidad de la sección de la aplicación correspondiente al botón que se está explicando.
+
+    En función del tipo de pantalla, se mostrarán los componentes de una forma u otra. 
+    */
+    a!columnsLayout(
+      columns: {
+        a!columnLayout(
+          contents: {
+
+            a!cardLayout(
+              contents: {
+                a!cardLayout(
+                  contents: {
+                    a!sideBySideLayout(
+                      items: {
+                        a!sideBySideItem(
+                          item: a!stampField(
+                            labelPosition: "COLLAPSED",
+                            icon: "info",
+                            contentColor: "STANDARD",
+                            size: if(rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[2], "TINY", "SMALL"),
+                            align: "END"
+                          ),
+                          width: "MINIMIZE"
+                        ),
+                        a!sideBySideItem(
+                          item: a!richTextDisplayField(
+                            labelPosition: "COLLAPSED",
+                            value: {
+                              a!richTextHeader(
+                                text: {
+                                  "INICIO"
+                                },
+                                size: if(rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[2], "SMALL", "MEDIUM")
+                              )
+                            }
+                          )
+                        )
+                      },
+                      alignVertical: "MIDDLE",
+                      spacing: "STANDARD"
+                    )
+                  },
+                  height: "AUTO",
+                  style: "#0c343d",
+                  marginBelow: "STANDARD"
+                ),
+                a!richTextDisplayField(
+                  labelPosition: "COLLAPSED",
+                  value: {
+                    a!richTextItem(
+                      text: {
+                        "Esta es la ventana en la que te encuentras. Donde se te da la bienvenida y se explica cómo acceder a cada parte de la aplicación."
+                      },
+
+                      size: if(rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[2], "STANDARD", "MEDIUM")
+                    )
+                  },
+                  preventWrapping: false
+                )
+              },
+              height: "MEDIUM_PLUS",
+              style: "#d0e0e3",
+              marginBelow: "STANDARD"
+            ),
+            a!cardLayout(
+              contents: {
+                a!cardLayout(
+                  contents: {
+                    a!sideBySideLayout(
+                      items: {
+                        a!sideBySideItem(
+                          item: a!stampField(
+                            labelPosition: "COLLAPSED",
+                            icon: "envelope",
+                            contentColor: "STANDARD",
+                            size: if(rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[2], "TINY", "SMALL"),
+                            align: "END"
+                          ),
+                          width: "MINIMIZE"
+                        ),
+                        a!sideBySideItem(
+                          item: a!richTextDisplayField(
+                            labelPosition: "COLLAPSED",
+                            value: {
+                              a!richTextHeader(
+                                text: {
+                                  "MENSAJES INTERNOS"
+                                },
+                                size: if(rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[2], "SMALL", "MEDIUM")
+                              )
+                            }
+                          )
+                        )
+                      },
+                      alignVertical: "MIDDLE",
+                      spacing: "STANDARD"
+                    )
+                  },
+                  height: "AUTO",
+                  style: "#0c343d",
+                  marginBelow: "STANDARD"
+                ),
+                a!richTextDisplayField(
+                  labelPosition: "COLLAPSED",
+                  value: {
+                    a!richTextItem(
+                      text: {
+                        "En esta ventana, tendrás a tu disposición un sistema de mensajería interna en la que podrás enviar mensajes internos a otros usuarios, ya sean técnicos, otros empleados del hospital o un supervisor. "
+                      },
+                      size: if(rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[2], "STANDARD", "MEDIUM")
+                    ),
+                    char(10),
+                    char(10),
+                    a!richTextItem(
+                      text: {
+                        "También tendrás una bandeja de entrada y otra de salida, donde podrás visualizar y gestionar los mensajes enviados y recibidos."
+                      },
+                      size: if(rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[2], "STANDARD", "MEDIUM")
+                    )
+                  },
+                  preventWrapping: false
+                )
+              },
+              height: "MEDIUM_PLUS",
+              style: "#d0e0e3",
+              marginBelow: "STANDARD"
+            )
+          }
+        ),
+        a!columnLayout(
+          contents: {
+            a!cardLayout(
+              contents: {
+                a!cardLayout(
+                  contents: {
+                    a!sideBySideLayout(
+                      items: {
+                        a!sideBySideItem(
+                          item: a!stampField(
+                            labelPosition: "COLLAPSED",
+                            icon: "tasks-alt",
+                            contentColor: "STANDARD",
+                            size: if(rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[2], "TINY", "SMALL"),
+                            align: "END"
+                          ),
+                          width: "MINIMIZE"
+                        ),
+                        a!sideBySideItem(
+                          item: a!richTextDisplayField(
+                            labelPosition: "COLLAPSED",
+                            value: {
+                              a!richTextHeader(
+
+                                text: {
+                                  "TAREAS"
+                                },
+                                size: if(rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[2], "SMALL", "MEDIUM")
+                              )
+                            }
+                          )
+                        )
+                      },
+                      alignVertical: "MIDDLE",
+                      spacing: "STANDARD"
+                    )
+                  },
+                  height: "AUTO",
+                  style: "#0c343d",
+                  marginBelow: "STANDARD"
+                ),
+                a!richTextDisplayField(
+                  labelPosition: "COLLAPSED",
+                  value: {
+                    a!richTextItem(
+                      text: {
+                        "En esta ventana podrás visualizar y gestionar las tareas relacionadas con los partes de reparación que te son asignadas únicamente a ti."
+                      },
+                      size: if(rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[2], "STANDARD", "MEDIUM")
+                    )
+                  },
+                  preventWrapping: false
+                )
+              },
+              height: "MEDIUM_PLUS",
+              style: "#d0e0e3",
+              marginBelow: "STANDARD"
+            ),
+            a!cardLayout(
+              contents: {
+                a!cardLayout(
+                  contents: {
+                    a!sideBySideLayout(
+                      items: {
+                        a!sideBySideItem(
+                          item: a!stampField(
+                            labelPosition: "COLLAPSED",
+                            icon: "envelope-o",
+                            contentColor: "STANDARD",
+                            size: if(rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[2], "TINY", "SMALL"),
+                            align: "END"
+                          ),
+                          width: "MINIMIZE"
+                        ),
+                        a!sideBySideItem(
+                          item: a!richTextDisplayField(
+                            labelPosition: "COLLAPSED",
+                            value: {
+                              a!richTextHeader(
+
+                                text: {
+                                  "SOLICITUDES EXTERNAS"
+                                },
+                                size: if(rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[2], "SMALL", "MEDIUM")
+                              )
+                            }
+                          )
+                        )
+                      },
+                      alignVertical: "MIDDLE",
+                      spacing: "STANDARD"
+                    )
+                  },
+                  height: "AUTO",
+                  style: "#0c343d",
+                  marginBelow: "STANDARD"
+                ),
+                a!richTextDisplayField(
+                  labelPosition: "COLLAPSED",
+                  value: {
+                    a!richTextItem(
+                      text: {
+                        "En esta ventana podrás visualizar solicitudes externas relacionadas con el material."
+                      },
+                      size: if(rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[2], "STANDARD", "MEDIUM")
+                    )
+                  },
+                  preventWrapping: false
+                )
+              },
+              height: "MEDIUM_PLUS",
+              style: "#d0e0e3",
+              marginBelow: "STANDARD"
+            )
+          }
+        ),
+        a!columnLayout(
+          contents: {
+
+            a!cardLayout(
+              contents: {
+                a!cardLayout(
+                  contents: {
+                    a!sideBySideLayout(
+                      items: {
+                        a!sideBySideItem(
+                          item: a!stampField(
+                            labelPosition: "COLLAPSED",
+                            icon: "file",
+                            contentColor: "STANDARD",
+                            size: if(rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[2], "TINY", "SMALL"),
+                            align: "END"
+                          ),
+                          width: "MINIMIZE"
+                        ),
+                        a!sideBySideItem(
+                          item: a!richTextDisplayField(
+                            labelPosition: "COLLAPSED",
+                            value: {
+                              a!richTextHeader(
+                                text: {
+                                  "PARTES"
+                                },
+                                size: if(rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[2], "SMALL", "MEDIUM")
+                              )
+                            }
+                          )
+                        )
+                      },
+                      alignVertical: "MIDDLE",
+                      spacing: "STANDARD"
+                    )
+                  },
+                  height: "AUTO",
+                  style: "#0c343d",
+                  marginBelow: "STANDARD"
+                ),
+                a!richTextDisplayField(
+                  labelPosition: "COLLAPSED",
+                  value: {
+                    a!richTextItem(
+                      text: {
+                        "Esta es la ventana donde podrás visualizar los partes generados hasta la fecha junto con toda su información."
+                      },
+
+                      size: if(rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[2], "STANDARD", "MEDIUM")
+                    )
+                  },
+                  preventWrapping: false
+                )
+              },
+              height: "MEDIUM_PLUS",
+              style: "#d0e0e3",
+              marginBelow: "STANDARD"
+            )
+          }
+        )
+      }
+    )
+  }
+)

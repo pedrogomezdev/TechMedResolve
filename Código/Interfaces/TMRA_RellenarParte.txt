@@ -1,0 +1,1142 @@
+/* Interfaz para rellenar el parte de reparación para los técnicos. */
+a!localVariables(
+  
+  /* Almacena el tipo de pantalla en el que se visualiza la interfaz*/
+  local!pantallaDispositivo: rule!TMRA_ObtenerTipoPantalla(),
+  
+  /*wherecontains y hacer constante*/
+  
+  /* Actualizaciones de realizadas en este parte. */
+  local!actualizaciones: rule!TMRA_ObtenerActualizacionesDeParte(
+    ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{3f384ff0-002a-471a-bb0c-14a42ade735d}ordenTrabajo']
+  ),
+  
+  /* Técnico responsable del parte. */
+  local!tecnico: rule!TMRA_ObtenerTecnicoPorId(
+    ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{7d2e6e00-1134-4af6-808a-45a63778c05b}idTecnicoFk']
+  ),
+  
+  /* Suma de la duración de todas las actualizaciones del parte */
+  local!duracion: rule!TMRA_ObtenerDuracionParte(
+    ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{3f384ff0-002a-471a-bb0c-14a42ade735d}ordenTrabajo']
+  ),
+  
+  /* Técnico loggeado*/
+  local!tecnicoLoggeado: rule!TMRA_ObtenerTecnicoPorUserName(user(loggedInUser(), "username")),
+  
+  /* Datos de empleado del técnico loggeado*/
+  local!datosTecnicoLoggeado: rule!TMRA_ObtenerEmpleadoPorNEmpleado(
+    local!tecnicoLoggeado['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.fields.{bc1f1de6-d1ac-40f9-b166-4836287852bc}nEmpleadoFk']
+  ),
+  
+  /* Nombre completo del técnico loggeado (tengo que sacarlo de BBDD) */
+  local!nombreTecnicoLoggeado: local!datosTecnicoLoggeado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{ea49ffaf-1db8-45a1-aa54-54fa8f543fd0}nombre'] & " " & local!datosTecnicoLoggeado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{a3d16573-1c20-4967-816e-7796933eb5ba}primerApellido'] & " " & local!datosTecnicoLoggeado['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{80d68571-ab99-43b4-9948-8228ee24a7d9}segundoApellido'],
+  
+  /* Almacenará las horas de duración de cada actualización. */
+  local!horasActualizacion,
+  local!horasActualizacion2: a!refreshVariable(
+    value: if(
+      a!isNullOrEmpty(local!horasActualizacion),
+      0,
+      local!horasActualizacion
+    ),
+    refreshOnReferencedVarChange: true
+  ),
+  /* Almacenará el técnico que está actualizando el parte. */
+  local!tecnicoQueActualiza,
+  
+  /* Almacenará la firma del parte*/
+  local!firma,
+  
+  /* Almacenará true si se selecciona la opción de dar de baja la máquina.*/
+  /*local!bajaMaquina,*/
+  
+  /* Devolverá true si se cambia el estado a "en curso" o "en suspensión"*/
+  local!actualizando: false,
+  
+  /* Almacena el precio total de todo el parte. */
+  local!precioParte: a!refreshVariable(
+    value: rule!TMRA_ObtenerPrecioParte(
+      precioHora: local!tecnico['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.fields.{0113b85c-1ceb-47f0-9669-303748a3cfa8}precioHora'],
+      
+      duracion: local!duracion + local!horasActualizacion2,
+      
+      gastosExtra: if(
+        a!isNullOrEmpty(
+          ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{e67a2257-fe16-4df3-ae4e-cb8fcb756399}gastosExtraReparacion']
+        ),
+        0,
+        ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{e67a2257-fe16-4df3-ae4e-cb8fcb756399}gastosExtraReparacion']
+      )
+
+    ),
+    refreshOnReferencedVarChange: true
+  ),
+  
+  
+  a!match(
+    value: local!pantallaDispositivo, 
+    
+    equals: "DESKTOP",
+    then: {
+      a!imageField(
+        labelPosition: "ABOVE",
+        images: {
+          a!documentImage(document: cons!TMRA_LOGO)
+        },
+        size: "MEDIUM_PLUS",
+        isThumbnail: false,
+        style: "STANDARD",
+        align: "CENTER"
+      ),
+      rule!TMRA_DatosAperturaIncidencia(ri!empleadoHospital),
+      rule!TMRA_DatosMaquinaReportada(parte: ri!parte, maquina: ri!maquina),
+      a!sectionLayout(
+        label: "Rellenar parte de reparación",
+        labelIcon: "wrench",
+        contents: {
+          a!cardLayout(
+            contents: {
+              a!textField(
+                label: "Técnico asignado:",
+                labelPosition: "ADJACENT",
+                value: rule!TMRA_ObtenerNombreCompletoTecnicoPorId(ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{7d2e6e00-1134-4af6-808a-45a63778c05b}idTecnicoFk']) & " - " & rule!TMRA_ObtenerEmpleadoPorNEmpleado(rule!TMRA_ObtenerTecnicoPorId(ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{7d2e6e00-1134-4af6-808a-45a63778c05b}idTecnicoFk'])['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.fields.{bc1f1de6-d1ac-40f9-b166-4836287852bc}nEmpleadoFk'])['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{dc7111bc-1917-4bb6-9f39-a00714968b9d}email'],
+                saveInto: {},
+                refreshAfter: "UNFOCUS",
+                readOnly: true,
+                validations: {},
+                inputPurpose: "OFF"
+              )
+            },
+            height: "AUTO",
+            style: "TRANSPARENT",
+            marginBelow: "STANDARD"
+          ),
+          a!cardLayout(
+            contents: {
+
+              a!sideBySideLayout(
+                items: {
+                  a!sideBySideItem(
+                    item: a!dropdownField(
+                      choiceLabels: cons!TMRA_ESTADOS_PARTES,
+                      choiceValues: cons!TMRA_ESTADOS_PARTES,
+                      label: "Estado",
+                      labelPosition: "ABOVE",
+                      placeholder: "--- Selecciona el estado de la incidencia ---",
+                      value: ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'],
+                      saveInto: {
+                        ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'],
+                        /* Reseteamos las variables al cambiar el estado. */
+                        a!save(
+                          ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{e27bccbb-c120-4a84-a426-f48019909d80}descripcionReparacion'],
+                          null
+                        ),
+                        a!save(
+                          ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{e67a2257-fe16-4df3-ae4e-cb8fcb756399}gastosExtraReparacion'],
+                          null
+                        ),
+                        a!save(ri!actualizacionParte, null),
+                        a!save(local!firma, null),
+                        /*a!save(local!Maquina, null),*/
+                        a!save(local!actualizando, false),
+                        a!save(local!tecnicoQueActualiza, null),
+                        a!save(ri!bajaMaquina, null)
+
+                      },
+                      searchDisplay: "AUTO",
+                      required: true,
+                      validations: {}
+                    )
+                  ),
+                  a!sideBySideItem(
+                    item: a!radioButtonField_23r3(
+                      label: "Baja de máquina",
+                      labelPosition: "ABOVE",
+                      choiceLabels: { "Sí", "No" },
+                      choiceValues: { true, false },
+                      value: ri!bajaMaquina,
+                      saveInto: ri!bajaMaquina,
+                      required: true,
+                      choiceLayout: "STACKED",
+                      validations: {}
+                    ),
+                    showWhen: ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[3]
+                  ),
+                  a!sideBySideItem(
+                    item: a!textField(
+                      label: "Fecha de apertura",
+                      labelPosition: "ABOVE",
+                      value: if(a!isNullOrEmpty(ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{51981084-667e-4270-b52a-243757fcf75c}fechaInicio']), " - ", text(ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{51981084-667e-4270-b52a-243757fcf75c}fechaInicio'], "dd/mm/yyyy")),
+                      readOnly: true,
+                      validations: {}
+                    )
+                  ),
+                  a!sideBySideItem(
+                    item: a!textField(
+                      label: "Fecha de cierre",
+                      labelPosition: "ABOVE",
+                      value: text(today(), "dd/mm/yyyy"),
+                      readOnly: true,
+                      validations: {
+                        if(
+                          a!isNotNullOrEmpty(
+                            ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{6bdad6b8-6a0a-40d3-92c3-3a3a0b1b2abe}fechaFin']
+                          ),
+                          if(
+                            ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{6bdad6b8-6a0a-40d3-92c3-3a3a0b1b2abe}fechaFin'] < ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{51981084-667e-4270-b52a-243757fcf75c}fechaInicio'],
+                            "La fecha de cierre no puede ser anterior a la fecha apertura",
+                            ""
+                          ),
+                          {}
+                        )
+                      }
+                    ),
+                    showWhen: or(
+                      ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[3],
+                      ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[4]
+                    )
+                  ),
+                  a!sideBySideItem(
+                    item: a!floatingPointField(
+                      label: "Horas de duración",
+                      labelPosition: "ABOVE",
+                      placeHolder: "Indica las horas de duración de la reparación",
+                      value: if(
+                        a!isNullOrEmpty(local!horasActualizacion),
+                        local!duracion,
+                        local!duracion + local!horasActualizacion
+                      ),
+                      saveInto: {},
+                      refreshAfter: "UNFOCUS",
+                      readOnly: true,
+                      validations: {}
+                    )
+                  )
+                }
+              ),
+              /*AÑADIR GRID AQUI*/
+              a!gridLayout(
+                totalCount: count(local!actualizaciones),
+                emptyGridMessage: "- No hay actualizaciones -",
+                headerCells: {
+                  a!gridLayoutHeaderCell(label: "Técnico"),
+                  a!gridLayoutHeaderCell(label: "Acciones realizadas"),
+                  a!gridLayoutHeaderCell(label: "Fecha"),
+                  a!gridLayoutHeaderCell(label: "Horas trabajadas"),
+                  /* La columna para borrar */
+                  a!gridLayoutHeaderCell(label: "")
+                },
+                columnConfigs: {
+                  a!gridLayoutColumnConfig(width: "DISTRIBUTE", weight: 3),
+                  a!gridLayoutColumnConfig(width: "DISTRIBUTE", weight: 10),
+                  a!gridLayoutColumnConfig(width: "DISTRIBUTE", weight: 3),
+                  a!gridLayoutColumnConfig(width: "DISTRIBUTE", weight: 3),
+                  a!gridLayoutColumnConfig(width: "ICON")
+                },
+                rows: a!forEach(
+                  items: local!actualizaciones,
+                  expression: a!gridRowLayout(
+                    id: fv!index,
+                    contents: {
+                      /* Si existe una actualización, me la mostrará como un textfield de solo lectura*/
+                      if(
+                        condition: rule!TMRA_ExisteActualizacion(
+                          fv!item['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{0300417e-7432-4c92-9d98-d23c28da6b41}id']
+                        ),
+                        valueIfTrue: a!textField(
+                          value: fv!item['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.relationships.{65232d99-3a81-40b9-b545-9f40cab7a1a0}tmraTecnicoRealizaActualizacion']['recordType!{31583091-121d-48f2-bb4f-da52c7595506}TMRA Tecnico Realiza Actualizacion.relationships.{98e64bb6-59bf-4db8-b87d-ed40c84df022}tmraTecnico']['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.relationships.{68cb95cc-f63f-4d1a-b290-8d30e056c923}tmraEmpleado.fields.{ea49ffaf-1db8-45a1-aa54-54fa8f543fd0}nombre'] & " " & fv!item['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.relationships.{65232d99-3a81-40b9-b545-9f40cab7a1a0}tmraTecnicoRealizaActualizacion']['recordType!{31583091-121d-48f2-bb4f-da52c7595506}TMRA Tecnico Realiza Actualizacion.relationships.{98e64bb6-59bf-4db8-b87d-ed40c84df022}tmraTecnico']['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.relationships.{68cb95cc-f63f-4d1a-b290-8d30e056c923}tmraEmpleado.fields.{a3d16573-1c20-4967-816e-7796933eb5ba}primerApellido'] & " " & fv!item['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.relationships.{65232d99-3a81-40b9-b545-9f40cab7a1a0}tmraTecnicoRealizaActualizacion']['recordType!{31583091-121d-48f2-bb4f-da52c7595506}TMRA Tecnico Realiza Actualizacion.relationships.{98e64bb6-59bf-4db8-b87d-ed40c84df022}tmraTecnico']['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.relationships.{68cb95cc-f63f-4d1a-b290-8d30e056c923}tmraEmpleado.fields.{80d68571-ab99-43b4-9948-8228ee24a7d9}segundoApellido'],
+                          required: true,
+                          readOnly: if(
+                            condition: rule!TMRA_ExisteActualizacion(
+                              fv!item['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{0300417e-7432-4c92-9d98-d23c28da6b41}id']
+                            ),
+                            valueIfTrue: true,
+                            valueIfFalse: false
+                          )
+                        ),
+                        /* Si no, me debe mostrar un texto no editable con el técnico logeado actualmente*/
+                        valueIfFalse: a!textField(
+                          value: local!nombreTecnicoLoggeado,
+                          readOnly: true
+                        )
+                      ),
+                      /* Campo de acciones realizadas*/
+                      a!paragraphField(
+                        placeHolder: "Indique cuáles fueron las acciones realizadas",
+                        value: fv!item['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{c5711d2b-c64c-4410-8081-2fe6a640070c}comentario'],
+                        saveInto: {
+                          fv!item['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{c5711d2b-c64c-4410-8081-2fe6a640070c}comentario'],
+                          ri!actualizacionParte['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{c5711d2b-c64c-4410-8081-2fe6a640070c}comentario']
+                        },
+                        required: true,
+                        readOnly: if(
+                          condition: rule!TMRA_ExisteActualizacion(
+                            fv!item['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{0300417e-7432-4c92-9d98-d23c28da6b41}id']
+                          ),
+                          valueIfTrue: true,
+                          valueIfFalse: false
+                        )
+                      ),
+                      a!dateField(value: today(), readOnly: true),
+                      a!floatingPointField(
+                        placeholder: "Indique las horas que dedicó",
+                        value: fv!item['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{75f5ffea-b9eb-4cbc-941b-9bf2c4c72633}horasTrabajadas'],
+                        saveInto: {
+                          fv!item['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{75f5ffea-b9eb-4cbc-941b-9bf2c4c72633}horasTrabajadas'],
+                          ri!actualizacionParte['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{75f5ffea-b9eb-4cbc-941b-9bf2c4c72633}horasTrabajadas'],
+                          local!horasActualizacion
+                        },
+                        required: true,
+                        readOnly: if(
+                          condition: rule!TMRA_ExisteActualizacion(
+                            fv!item['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{0300417e-7432-4c92-9d98-d23c28da6b41}id']
+                          ),
+                          valueIfTrue: true,
+                          valueIfFalse: false
+                        )
+                      ),
+                      /*Para la columna de eliminar*/
+                      a!richTextDisplayField(
+                        value: if(
+                          condition: rule!TMRA_ExisteActualizacion(
+                            fv!item['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{0300417e-7432-4c92-9d98-d23c28da6b41}id']
+                          ),
+                          valueIfTrue: a!richTextIcon(
+                            icon: "",
+                            linkStyle: "STANDALONE",
+                            color: "NEGATIVE"
+                          ),
+                          valueIfFalse: a!richTextIcon(
+                            icon: "close",
+                            link: a!dynamicLink(
+                              value: fv!index,
+                              saveInto: {
+                                a!save(
+                                  local!actualizaciones,
+                                  remove(local!actualizaciones, save!value)
+                                ),
+                                a!save(local!actualizando, false)
+                              }
+                            ),
+                            linkStyle: "STANDALONE",
+                            color: "NEGATIVE"
+                          )
+                        )
+                      )
+                    }
+                  )
+                ),
+                showWhen: or(
+                  ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[1],
+                  ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[2]
+                ),
+                /* 
+              Al pulsar en el link para añadir una fila, crearemos una variable nueva de tipo record que estará vacía. Inicializamos uno
+              de los atributos, aunque sea vacío, ya que si no, hay veces que da problemas.              
+              */
+                addRowlink: a!dynamicLink(
+                  label: "Añadir actualización",
+                  saveInto: {
+                    a!save(
+                      local!actualizaciones,
+                      append(
+                        local!actualizaciones,
+                        'recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte'(
+                          'recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{0300417e-7432-4c92-9d98-d23c28da6b41}id': {}
+                        )
+                      )
+                    ),
+                    a!save(local!actualizando, true)
+                  },
+                  showWhen: if(local!actualizando, false, true)
+                ),
+                rowHeader: 1
+              ),
+              a!paragraphField(
+                label: "Descripción de la reparación",
+                labelPosition: "ABOVE",
+                placeholder: "Indique en detalle el resultado de la reparación, así como cualquier otro detalle que considere de interés",
+                value: ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{e27bccbb-c120-4a84-a426-f48019909d80}descripcionReparacion'],
+                saveInto: ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{e27bccbb-c120-4a84-a426-f48019909d80}descripcionReparacion'],
+                refreshAfter: "UNFOCUS",
+                height: "MEDIUM",
+                showWhen: or(
+                  ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[3],
+                  ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[4]
+                ),
+                required: true,
+                validations: {}
+              ),
+              a!floatingPointField(
+                label: "Horas trabajadas: ",
+                labelPosition: "ADJACENT",
+                helpTooltip: "Horas trabajadas en la última actualización antes de cerrar el parte.",
+                placeholder: "Acepta decimales.",
+                value: local!horasActualizacion,
+                saveInto: local!horasActualizacion,
+                refreshAfter: "UNFOCUS",
+                showWhen: or(
+                  ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[3],
+                  ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[4]
+                ),
+                validations: {}
+              ),
+              a!sectionLayout(
+                label: "",
+                contents: {
+                  a!floatingPointField(
+                    label: "Costes asociados: ",
+                    labelPosition: "ADJACENT",
+                    placeholder: "Coste (en euros) derivados de la reparación",
+                    value: ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{e67a2257-fe16-4df3-ae4e-cb8fcb756399}gastosExtraReparacion'],
+                    saveInto: ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{e67a2257-fe16-4df3-ae4e-cb8fcb756399}gastosExtraReparacion'],
+                    refreshAfter: "UNFOCUS",
+                    readOnly: false,
+                    validations: {}
+                  ),
+                  a!textField(
+                    label: "Precio total: ",
+                    labelPosition: "ADJACENT",
+                    value: local!precioParte & " €",
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                },
+                showWhen: or(
+                  ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[3],
+                  ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[4]
+                ),
+                marginAbove: "STANDARD",
+                marginBelow: "MORE"
+              ),
+              a!signatureField(
+                label: "Firma responsable:",
+                labelPosition: "ADJACENT",
+                target: cons!TMRA_FIRMAS_PARTES,
+                fileName: "Firma parte - " & ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{3f384ff0-002a-471a-bb0c-14a42ade735d}ordenTrabajo'],
+                value: local!firma,
+                saveInto: local!firma,
+                required: true,
+                showWhen: or(
+                  ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[3],
+                  ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[4]
+                )
+              )
+            },
+            height: "AUTO",
+            style: "TRANSPARENT",
+            marginBelow: "STANDARD"
+          )
+        }
+      ),
+      a!buttonArrayLayout(
+        buttons: {
+          a!buttonWidget_23r3(
+            label: if(
+              condition: or(
+                ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[1],
+                ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[2]
+              ),
+              valueIfTrue: "ACTUALIZAR",
+              valueIfFalse: "CERRAR PARTE"
+            ),
+            style: "NORMAL",
+            disabled: {
+              if(
+                condition: a!isNullOrEmpty(
+                  ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado']
+                ),
+                valueIfTrue: true,
+                valueIfFalse: if(
+                  condition: and(
+                    local!actualizando,
+                    or(
+                      a!isNullOrEmpty(local!horasActualizacion),
+                      a!isNullOrEmpty(
+                        ri!actualizacionParte['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{c5711d2b-c64c-4410-8081-2fe6a640070c}comentario']
+                      )
+                      /*ri!actualizacionParte['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{c5711d2b-c64c-4410-8081-2fe6a640070c}comentario'] = 0*/
+                    )
+                  ),
+                  valueIfTrue: true,
+                  valueIfFalse: if(
+                    and(
+                      or(
+                        ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[1],
+                        ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[2]
+                      ),
+                      not(local!actualizando)
+                    ),
+                    true,
+                    false
+                  )
+                )
+              )
+            },
+            submit: true,
+            saveInto: {
+              if(
+                /* Si se selecciona el estado del parte como resuelto o resuelto con problemas*/
+                condition: or(
+                  ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[3],
+                  ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[4]
+                ),
+                /* Guardamos la fecha de fin*/
+                valueIfTrue: {
+                  a!save(
+                    ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{6bdad6b8-6a0a-40d3-92c3-3a3a0b1b2abe}fechaFin'],
+                    today()
+                  ),
+                  a!save(
+                    ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91b346c9-6d03-4b0a-9d31-540a76ef68be}firmaTecnico'],
+                    local!firma
+                  )
+                },
+                /* 
+
+              Si no se selecciona el estado del parte como resuelto o resuelto con problemas, se entiende que está en curso o en suspension
+              y, por lo tanto, tendrá una actualización. Por lo tanto, se realizarán otros a!save.
+
+              */
+                valueIfFalse: {
+                  /* Se guarda el tecnico que realizó la actualización. */
+                  a!save(
+                    ri!actualizacionParte['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.relationships.{65232d99-3a81-40b9-b545-9f40cab7a1a0}tmraTecnicoRealizaActualizacion.fields.{69cc1a64-6e80-4cec-aa0b-3540c56c8b3e}idTecnicoFk'],
+                    local!tecnicoLoggeado['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.fields.{8aa19895-e18a-4667-97f6-dcf2a51293ec}id']
+                  ),
+                  a!save(
+                    ri!actualizacionParte['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{c4c6b859-138f-4146-8775-586a8e85670d}ordenTrabajoFk'],
+                    ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{3f384ff0-002a-471a-bb0c-14a42ade735d}ordenTrabajo']
+                  ),
+                  /* Se guarda el número de horas trabajadas indicadas en la actualización -- REVISAR --*/
+                  a!save(
+                    ri!actualizacionParte['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{75f5ffea-b9eb-4cbc-941b-9bf2c4c72633}horasTrabajadas'],
+                    if(
+                      a!isNullOrEmpty(local!horasActualizacion),
+                      0,
+                      local!horasActualizacion
+                    )
+                  ),
+                  /* Se guarda la fecha de la actualización*/
+                  a!save(
+                    ri!actualizacionParte['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{d9374b0e-f6d8-4be2-9978-cd21fbe061e6}fecha'],
+                    today()
+                  ),
+                  a!save(
+                    ri!actualizacionParte['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{75f5ffea-b9eb-4cbc-941b-9bf2c4c72633}horasTrabajadas'],
+                    local!horasActualizacion
+                  )
+                }
+              ),
+              /* Se seleccione el estado que se seleccione, se almacenará el precio y las horas de duración actuales. */
+              a!save(
+                ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{9f0eca1b-7744-4a16-8ecb-a5a403869753}precio'],
+                local!precioParte
+              ),
+              a!save(
+                ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{97a973ee-33b3-4868-abb4-e37abf348274}horasDuracion'],
+                if(
+                  a!isNullOrEmpty(local!horasActualizacion),
+                  rule!TMRA_ObtenerDuracionParte(
+                    ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{3f384ff0-002a-471a-bb0c-14a42ade735d}ordenTrabajo']
+                  ),
+                  rule!TMRA_ObtenerDuracionParte(
+                    ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{3f384ff0-002a-471a-bb0c-14a42ade735d}ordenTrabajo']
+                  ) + local!horasActualizacion
+                )
+              ),
+              if(
+                /* Si se ha seleccionado dar de baja la maquina*/
+                condition: ri!bajaMaquina,
+                /* Se cambia el estado de la misma a "baja" */
+                valueIfTrue: a!save(
+                  ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{fff97e62-ff27-415c-94c1-af562404ecb8}estado'],
+                  cons!TMRA_ESTADOS_MAQUINAS[4]
+                ),
+                /* Si no, según el estado del parte...*/
+                valueIfFalse: a!match(
+                  value: ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'],
+                  /* Si está como resuelto o cerrado con problemas, el estado de la máquina será "operativo" */
+                  equals: cons!TMRA_ESTADOS_PARTES[4],
+                  /* resuelto */
+                  then: a!save(
+                    ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{fff97e62-ff27-415c-94c1-af562404ecb8}estado'],
+                    cons!TMRA_ESTADOS_MAQUINAS[1]/* operativo*/
+
+                  ),
+                  equals: cons!TMRA_ESTADOS_PARTES[3],
+                  /* cerrado con problemas*/
+                  then: a!save(
+                    ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{fff97e62-ff27-415c-94c1-af562404ecb8}estado'],
+                    cons!TMRA_ESTADOS_MAQUINAS[1]/* operativo */
+                  ),
+                  /* Si está en curso o en suspensión, el estado de la máquina será "en reparación" */
+                  equals: cons!TMRA_ESTADOS_PARTES[1],
+                  /* en curso*/
+                  then: a!save(
+                    ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{fff97e62-ff27-415c-94c1-af562404ecb8}estado'],
+                    cons!TMRA_ESTADOS_MAQUINAS[2]/* en reparación */
+                  ),
+                  equals: cons!TMRA_ESTADOS_PARTES[2],
+                  /* en suspensión */
+                  then: a!save(
+                    ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{fff97e62-ff27-415c-94c1-af562404ecb8}estado'],
+                    cons!TMRA_ESTADOS_MAQUINAS[2]/* en reparación */
+                  ),
+                  /* En cualquier otro caso, el estado de la máquina será "fuera de servicio" */
+                  default: a!save(
+                    ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{fff97e62-ff27-415c-94c1-af562404ecb8}estado'],
+                    cons!TMRA_ESTADOS_MAQUINAS[3]
+                  )
+                )
+              )
+            },
+            icon: if(
+              condition: or(
+                ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[1],
+                ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[2]
+              ),
+              valueIfTrue: "floppy-o",
+              valueIfFalse: "floppy-o"
+            )
+          )
+
+        },
+        align: "CENTER"
+      )
+    },
+    
+    default: {
+      a!imageField(
+        labelPosition: "ABOVE",
+        images: {
+          a!documentImage(document: cons!TMRA_LOGO)
+        },
+        size: "MEDIUM_PLUS",
+        isThumbnail: false,
+        style: "STANDARD",
+        align: "CENTER"
+      ),
+      rule!TMRA_DatosAperturaIncidencia(ri!empleadoHospital),
+      rule!TMRA_DatosMaquinaReportada(parte: ri!parte, maquina: ri!maquina),
+      a!sectionLayout(
+        label: "Rellenar parte de reparación",
+        labelIcon: "wrench",
+        contents: {
+          a!cardLayout(
+            contents: {
+              a!textField(
+                label: "Técnico asignado:",
+                labelPosition: "ADJACENT",
+                value: rule!TMRA_ObtenerNombreCompletoTecnicoPorId(ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{7d2e6e00-1134-4af6-808a-45a63778c05b}idTecnicoFk']) & " - " & rule!TMRA_ObtenerEmpleadoPorNEmpleado(rule!TMRA_ObtenerTecnicoPorId(ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{7d2e6e00-1134-4af6-808a-45a63778c05b}idTecnicoFk'])['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.fields.{bc1f1de6-d1ac-40f9-b166-4836287852bc}nEmpleadoFk'])['recordType!{5a516d28-d3a5-44e9-8017-4d15c6b908ec}TMRA Empleado.fields.{dc7111bc-1917-4bb6-9f39-a00714968b9d}email'],
+                saveInto: {},
+                refreshAfter: "UNFOCUS",
+                readOnly: true,
+                validations: {},
+                inputPurpose: "OFF"
+              )
+            },
+            height: "AUTO",
+            style: "TRANSPARENT",
+            marginBelow: "STANDARD"
+          ),
+          a!cardLayout(
+            contents: {
+
+              a!sideBySideLayout(
+                items: {
+                  a!sideBySideItem(
+                    item: a!dropdownField(
+                      choiceLabels: cons!TMRA_ESTADOS_PARTES,
+                      choiceValues: cons!TMRA_ESTADOS_PARTES,
+                      label: "Estado",
+                      labelPosition: "ABOVE",
+                      placeholder: "--- Selecciona el estado de la incidencia ---",
+                      value: ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'],
+                      saveInto: {
+                        ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'],
+                        /* Reseteamos las variables al cambiar el estado. */
+                        a!save(
+                          ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{e27bccbb-c120-4a84-a426-f48019909d80}descripcionReparacion'],
+                          null
+                        ),
+                        a!save(
+                          ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{e67a2257-fe16-4df3-ae4e-cb8fcb756399}gastosExtraReparacion'],
+                          null
+                        ),
+                        a!save(ri!actualizacionParte, null),
+                        a!save(local!firma, null),
+                        /*a!save(local!Maquina, null),*/
+                        a!save(local!actualizando, false),
+                        a!save(local!tecnicoQueActualiza, null)
+
+                      },
+                      searchDisplay: "AUTO",
+                      required: true,
+                      validations: {}
+                    )
+                  ),
+                  a!sideBySideItem(
+                    item: a!radioButtonField_23r3(
+                      label: "Baja de máquina",
+                      labelPosition: "ABOVE",
+                      choiceLabels: { "Sí", "No" },
+                      choiceValues: { true, false },
+                      value: ri!bajaMaquina,
+                      saveInto: ri!bajaMaquina,
+                      required: true,
+                      choiceLayout: "STACKED",
+                      validations: {}
+                    ),
+                    showWhen: ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[3]
+                  ),
+                  a!sideBySideItem(
+                    item: a!textField(
+                      label: "Fecha de apertura",
+                      labelPosition: "ABOVE",
+                      value: if(a!isNullOrEmpty(ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{51981084-667e-4270-b52a-243757fcf75c}fechaInicio']), " - ", text(ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{51981084-667e-4270-b52a-243757fcf75c}fechaInicio'], "dd/mm/yyyy")),
+                      readOnly: true,
+                      validations: {}
+                    )
+                  ),
+                  a!sideBySideItem(
+                    item: a!textField(
+                      label: "Fecha de cierre",
+                      labelPosition: "ABOVE",
+                      value: text(today(), "dd/mm/yyyy"),
+                      readOnly: true,
+                      validations: {
+                        if(
+                          a!isNotNullOrEmpty(
+                            ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{6bdad6b8-6a0a-40d3-92c3-3a3a0b1b2abe}fechaFin']
+                          ),
+                          if(
+                            ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{6bdad6b8-6a0a-40d3-92c3-3a3a0b1b2abe}fechaFin'] < ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{51981084-667e-4270-b52a-243757fcf75c}fechaInicio'],
+                            "La fecha de cierre no puede ser anterior a la fecha apertura",
+                            ""
+                          ),
+                          {}
+                        )
+                      }
+                    ),
+                    showWhen: or(
+                      ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[3],
+                      ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[4]
+                    )
+                  ),
+                  a!sideBySideItem(
+                    item: a!floatingPointField(
+                      label: "Horas de duración",
+                      labelPosition: "ABOVE",
+                      placeHolder: "Indica las horas de duración de la reparación",
+                      value: if(
+                        a!isNullOrEmpty(local!horasActualizacion),
+                        local!duracion,
+                        local!duracion + local!horasActualizacion
+                      ),
+                      saveInto: {},
+                      refreshAfter: "UNFOCUS",
+                      readOnly: true,
+                      validations: {}
+                    )
+                  )
+                }
+              ),
+              /*AÑADIR GRID AQUI*/
+              a!gridLayout(
+                totalCount: count(local!actualizaciones),
+                emptyGridMessage: "- No hay actualizaciones -",
+                headerCells: {
+                  a!gridLayoutHeaderCell(label: "Técnico"),
+                  a!gridLayoutHeaderCell(label: "Acciones realizadas"),
+                  a!gridLayoutHeaderCell(label: "Fecha"),
+                  a!gridLayoutHeaderCell(label: "Horas trabajadas"),
+                  /* La columna para borrar */
+                  a!gridLayoutHeaderCell(label: "")
+                },
+                columnConfigs: {
+                  a!gridLayoutColumnConfig(width: "DISTRIBUTE", weight: 3),
+                  a!gridLayoutColumnConfig(width: "DISTRIBUTE", weight: 10),
+                  a!gridLayoutColumnConfig(width: "DISTRIBUTE", weight: 3),
+                  a!gridLayoutColumnConfig(width: "DISTRIBUTE", weight: 3),
+                  a!gridLayoutColumnConfig(width: "ICON")
+                },
+                rows: a!forEach(
+                  items: local!actualizaciones,
+                  expression: a!gridRowLayout(
+                    id: fv!index,
+                    contents: {
+                      /* Si existe una actualización, me la mostrará como un textfield de solo lectura*/
+                      if(
+                        condition: rule!TMRA_ExisteActualizacion(
+                          fv!item['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{0300417e-7432-4c92-9d98-d23c28da6b41}id']
+                        ),
+                        valueIfTrue: a!textField(
+                          value: fv!item['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.relationships.{65232d99-3a81-40b9-b545-9f40cab7a1a0}tmraTecnicoRealizaActualizacion']['recordType!{31583091-121d-48f2-bb4f-da52c7595506}TMRA Tecnico Realiza Actualizacion.relationships.{98e64bb6-59bf-4db8-b87d-ed40c84df022}tmraTecnico']['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.relationships.{68cb95cc-f63f-4d1a-b290-8d30e056c923}tmraEmpleado.fields.{ea49ffaf-1db8-45a1-aa54-54fa8f543fd0}nombre'] & " " & fv!item['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.relationships.{65232d99-3a81-40b9-b545-9f40cab7a1a0}tmraTecnicoRealizaActualizacion']['recordType!{31583091-121d-48f2-bb4f-da52c7595506}TMRA Tecnico Realiza Actualizacion.relationships.{98e64bb6-59bf-4db8-b87d-ed40c84df022}tmraTecnico']['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.relationships.{68cb95cc-f63f-4d1a-b290-8d30e056c923}tmraEmpleado.fields.{a3d16573-1c20-4967-816e-7796933eb5ba}primerApellido'] & " " & fv!item['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.relationships.{65232d99-3a81-40b9-b545-9f40cab7a1a0}tmraTecnicoRealizaActualizacion']['recordType!{31583091-121d-48f2-bb4f-da52c7595506}TMRA Tecnico Realiza Actualizacion.relationships.{98e64bb6-59bf-4db8-b87d-ed40c84df022}tmraTecnico']['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.relationships.{68cb95cc-f63f-4d1a-b290-8d30e056c923}tmraEmpleado.fields.{80d68571-ab99-43b4-9948-8228ee24a7d9}segundoApellido'],
+                          required: true,
+                          readOnly: if(
+                            condition: rule!TMRA_ExisteActualizacion(
+                              fv!item['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{0300417e-7432-4c92-9d98-d23c28da6b41}id']
+                            ),
+                            valueIfTrue: true,
+                            valueIfFalse: false
+                          )
+                        ),
+                        /* Si no, me debe mostrar un texto no editable con el técnico logeado actualmente*/
+                        valueIfFalse: a!textField(
+                          value: local!nombreTecnicoLoggeado,
+                          readOnly: true
+                        )
+                      ),
+                      /* Campo de acciones realizadas*/
+                      a!paragraphField(
+                        placeHolder: "Indique cuáles fueron las acciones realizadas",
+                        value: fv!item['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{c5711d2b-c64c-4410-8081-2fe6a640070c}comentario'],
+                        saveInto: {
+                          fv!item['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{c5711d2b-c64c-4410-8081-2fe6a640070c}comentario'],
+                          ri!actualizacionParte['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{c5711d2b-c64c-4410-8081-2fe6a640070c}comentario']
+                        },
+                        required: true,
+                        readOnly: if(
+                          condition: rule!TMRA_ExisteActualizacion(
+                            fv!item['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{0300417e-7432-4c92-9d98-d23c28da6b41}id']
+                          ),
+                          valueIfTrue: true,
+                          valueIfFalse: false
+                        )
+                      ),
+                      a!dateField(value: today(), readOnly: true),
+                      a!floatingPointField(
+                        placeholder: "Indique las horas que dedicó",
+                        value: fv!item['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{75f5ffea-b9eb-4cbc-941b-9bf2c4c72633}horasTrabajadas'],
+                        saveInto: {
+                          fv!item['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{75f5ffea-b9eb-4cbc-941b-9bf2c4c72633}horasTrabajadas'],
+                          ri!actualizacionParte['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{75f5ffea-b9eb-4cbc-941b-9bf2c4c72633}horasTrabajadas'],
+                          local!horasActualizacion
+                        },
+                        required: true,
+                        readOnly: if(
+                          condition: rule!TMRA_ExisteActualizacion(
+                            fv!item['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{0300417e-7432-4c92-9d98-d23c28da6b41}id']
+                          ),
+                          valueIfTrue: true,
+                          valueIfFalse: false
+                        )
+                      ),
+                      /*Para la columna de eliminar*/
+                      a!richTextDisplayField(
+                        value: if(
+                          condition: rule!TMRA_ExisteActualizacion(
+                            fv!item['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{0300417e-7432-4c92-9d98-d23c28da6b41}id']
+                          ),
+                          valueIfTrue: a!richTextIcon(
+                            icon: "",
+                            linkStyle: "STANDALONE",
+                            color: "NEGATIVE"
+                          ),
+                          valueIfFalse: a!richTextIcon(
+                            icon: "close",
+                            link: a!dynamicLink(
+                              value: fv!index,
+                              saveInto: {
+                                a!save(
+                                  local!actualizaciones,
+                                  remove(local!actualizaciones, save!value)
+                                ),
+                                a!save(local!actualizando, false)
+                              }
+                            ),
+                            linkStyle: "STANDALONE",
+                            color: "NEGATIVE"
+                          )
+                        )
+                      )
+                    }
+                  )
+                ),
+                showWhen: or(
+                  ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[1],
+                  ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[2]
+                ),
+                /* 
+              Al pulsar en el link para añadir una fila, crearemos una variable nueva de tipo record que estará vacía. Inicializamos uno
+              de los atributos, aunque sea vacío, ya que si no, hay veces que da problemas.              
+              */
+                addRowlink: a!dynamicLink(
+                  label: "Añadir actualización",
+                  saveInto: {
+                    a!save(
+                      local!actualizaciones,
+                      append(
+                        local!actualizaciones,
+                        'recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte'(
+                          'recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{0300417e-7432-4c92-9d98-d23c28da6b41}id': {}
+                        )
+                      )
+                    ),
+                    a!save(local!actualizando, true)
+                  },
+                  showWhen: if(local!actualizando, false, true)
+                ),
+                rowHeader: 1
+              ),
+              a!paragraphField(
+                label: "Descripción de la reparación",
+                labelPosition: "ABOVE",
+                placeholder: "Indique en detalle el resultado de la reparación, así como cualquier otro detalle que considere de interés",
+                value: ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{e27bccbb-c120-4a84-a426-f48019909d80}descripcionReparacion'],
+                saveInto: ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{e27bccbb-c120-4a84-a426-f48019909d80}descripcionReparacion'],
+                refreshAfter: "UNFOCUS",
+                height: "MEDIUM",
+                showWhen: or(
+                  ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[3],
+                  ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[4]
+                ),
+                required: true,
+                validations: {}
+              ),
+              a!floatingPointField(
+                label: "Horas trabajadas: ",
+                labelPosition: "ADJACENT",
+                helpTooltip: "Horas trabajadas en la última actualización antes de cerrar el parte.",
+                placeholder: "Acepta decimales.",
+                value: local!horasActualizacion,
+                saveInto: local!horasActualizacion,
+                refreshAfter: "UNFOCUS",
+                showWhen: or(
+                  ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[3],
+                  ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[4]
+                ),
+                validations: {}
+              ),
+              a!sectionLayout(
+                label: "",
+                contents: {
+                  a!floatingPointField(
+                    label: "Costes asociados (€): ",
+                    labelPosition: "ADJACENT",
+                    placeholder: "Coste (en euros) derivados de la reparación",
+                    value: ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{e67a2257-fe16-4df3-ae4e-cb8fcb756399}gastosExtraReparacion'],
+                    saveInto: ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{e67a2257-fe16-4df3-ae4e-cb8fcb756399}gastosExtraReparacion'],
+                    refreshAfter: "UNFOCUS",
+                    readOnly: false,
+                    validations: {}
+                  ),
+                  a!textField(
+                    label: "Precio total: ",
+                    labelPosition: "ADJACENT",
+                    value: local!precioParte & " €",
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                },
+                showWhen: or(
+                  ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[3],
+                  ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[4]
+                ),
+                marginAbove: "STANDARD",
+                marginBelow: "MORE"
+              ),
+              a!signatureField(
+                label: "Firma responsable:",
+                labelPosition: "ADJACENT",
+                target: cons!TMRA_FIRMAS_PARTES,
+                fileName: "Firma parte - " & ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{3f384ff0-002a-471a-bb0c-14a42ade735d}ordenTrabajo'],
+                value: local!firma,
+                saveInto: local!firma,
+                required: true,
+                showWhen: or(
+                  ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[3],
+                  ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[4]
+                )
+              )
+            },
+            height: "AUTO",
+            style: "TRANSPARENT",
+            marginBelow: "STANDARD"
+          )
+        }
+      ),
+      a!buttonArrayLayout(
+        buttons: {
+          a!buttonWidget_23r3(
+            label: if(
+              condition: or(
+                ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[1],
+                ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[2]
+              ),
+              valueIfTrue: "ACTUALIZAR",
+              valueIfFalse: "CERRAR PARTE"
+            ),
+            style: "NORMAL",
+            disabled: {
+              if(
+                condition: a!isNullOrEmpty(
+                  ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado']
+                ),
+                valueIfTrue: true,
+                valueIfFalse: if(
+                  condition: and(
+                    local!actualizando,
+                    or(
+                      a!isNullOrEmpty(local!horasActualizacion),
+                      a!isNullOrEmpty(
+                        ri!actualizacionParte['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{c5711d2b-c64c-4410-8081-2fe6a640070c}comentario']
+                      )
+                      /*ri!actualizacionParte['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{c5711d2b-c64c-4410-8081-2fe6a640070c}comentario'] = 0*/
+                    )
+                  ),
+                  valueIfTrue: true,
+                  valueIfFalse: if(
+                    and(
+                      or(
+                        ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[1],
+                        ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[2]
+                      ),
+                      not(local!actualizando)
+                    ),
+                    true,
+                    false
+                  )
+                )
+              )
+            },
+            submit: true,
+            saveInto: {
+              
+              
+              if(
+                /* Si se selecciona el estado del parte como resuelto o resuelto con problemas*/
+                condition: or(
+                  ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[3],
+                  ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[4]
+                ),
+                /* Guardamos la fecha de fin*/
+                valueIfTrue: {
+                  a!save(
+                    ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{6bdad6b8-6a0a-40d3-92c3-3a3a0b1b2abe}fechaFin'],
+                    today()
+                  ),
+                  a!save(
+                    ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91b346c9-6d03-4b0a-9d31-540a76ef68be}firmaTecnico'],
+                    local!firma
+                  )
+                },
+                /* 
+
+              Si no se selecciona el estado del parte como resuelto o resuelto con problemas, se entiende que está en curso o en suspension
+              y, por lo tanto, tendrá una actualización. Por lo tanto, se realizarán otros a!save.
+
+              */
+                valueIfFalse: {
+                  /* Se guarda el tecnico que realizó la actualización. */
+                  a!save(
+                    ri!actualizacionParte['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.relationships.{65232d99-3a81-40b9-b545-9f40cab7a1a0}tmraTecnicoRealizaActualizacion.fields.{69cc1a64-6e80-4cec-aa0b-3540c56c8b3e}idTecnicoFk'],
+                    local!tecnicoLoggeado['recordType!{5902f1dd-2184-4068-8d53-d9d4e8fba434}TMRA Tecnico.fields.{8aa19895-e18a-4667-97f6-dcf2a51293ec}id']
+                  ),
+                  a!save(
+                    ri!actualizacionParte['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{c4c6b859-138f-4146-8775-586a8e85670d}ordenTrabajoFk'],
+                    ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{3f384ff0-002a-471a-bb0c-14a42ade735d}ordenTrabajo']
+                  ),
+                  /* Se guarda el número de horas trabajadas indicadas en la actualización -- REVISAR --*/
+                  a!save(
+                    ri!actualizacionParte['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{75f5ffea-b9eb-4cbc-941b-9bf2c4c72633}horasTrabajadas'],
+                    if(
+                      a!isNullOrEmpty(local!horasActualizacion),
+                      0,
+                      local!horasActualizacion
+                    )
+                  ),
+                  /* Se guarda la fecha de la actualización*/
+                  a!save(
+                    ri!actualizacionParte['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{d9374b0e-f6d8-4be2-9978-cd21fbe061e6}fecha'],
+                    today()
+                  ),
+                  a!save(
+                    ri!actualizacionParte['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{75f5ffea-b9eb-4cbc-941b-9bf2c4c72633}horasTrabajadas'],
+                    local!horasActualizacion
+                  )
+                }
+              ),
+              /* Se seleccione el estado que se seleccione, se almacenará el precio y las horas de duración actuales. */
+              a!save(
+                ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{9f0eca1b-7744-4a16-8ecb-a5a403869753}precio'],
+                local!precioParte
+              ),
+              a!save(
+                ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{97a973ee-33b3-4868-abb4-e37abf348274}horasDuracion'],
+                if(
+                  a!isNullOrEmpty(local!horasActualizacion),
+                  rule!TMRA_ObtenerDuracionParte(
+                    ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{3f384ff0-002a-471a-bb0c-14a42ade735d}ordenTrabajo']
+                  ),
+                  rule!TMRA_ObtenerDuracionParte(
+                    ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{3f384ff0-002a-471a-bb0c-14a42ade735d}ordenTrabajo']
+                  ) + local!horasActualizacion
+                )
+              ),
+              if(
+                /* Si se ha seleccionado dar de baja la maquina*/
+                condition: ri!bajaMaquina,
+                /* Se cambia el estado de la misma a "baja" */
+                valueIfTrue: a!save(
+                  ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{fff97e62-ff27-415c-94c1-af562404ecb8}estado'],
+                  cons!TMRA_ESTADOS_MAQUINAS[4]
+                ),
+                /* Si no, según el estado del parte...*/
+                valueIfFalse: a!match(
+                  value: ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'],
+                  /* Si está como resuelto o cerrado con problemas, el estado de la máquina será "operativo" */
+                  equals: cons!TMRA_ESTADOS_PARTES[4],
+                  /* resuelto */
+                  then: a!save(
+                    ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{fff97e62-ff27-415c-94c1-af562404ecb8}estado'],
+                    cons!TMRA_ESTADOS_MAQUINAS[1]/* operativo*/
+
+                  ),
+                  equals: cons!TMRA_ESTADOS_PARTES[3],
+                  /* cerrado con problemas*/
+                  then: a!save(
+                    ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{fff97e62-ff27-415c-94c1-af562404ecb8}estado'],
+                    cons!TMRA_ESTADOS_MAQUINAS[1]/* operativo */
+                  ),
+                  /* Si está en curso o en suspensión, el estado de la máquina será "en reparación" */
+                  equals: cons!TMRA_ESTADOS_PARTES[1],
+                  /* en curso*/
+                  then: a!save(
+                    ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{fff97e62-ff27-415c-94c1-af562404ecb8}estado'],
+                    cons!TMRA_ESTADOS_MAQUINAS[2]/* en reparación */
+                  ),
+                  equals: cons!TMRA_ESTADOS_PARTES[2],
+                  /* en suspensión */
+                  then: a!save(
+                    ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{fff97e62-ff27-415c-94c1-af562404ecb8}estado'],
+                    cons!TMRA_ESTADOS_MAQUINAS[2]/* en reparación */
+                  ),
+                  /* En cualquier otro caso, el estado de la máquina será "fuera de servicio" */
+                  default: a!save(
+                    ri!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{fff97e62-ff27-415c-94c1-af562404ecb8}estado'],
+                    cons!TMRA_ESTADOS_MAQUINAS[3]
+                  )
+                )
+              )
+            },
+            icon: if(
+              condition: or(
+                ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[1],
+                ri!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'] = cons!TMRA_ESTADOS_PARTES[2]
+              ),
+              valueIfTrue: "floppy-o",
+              valueIfFalse: "floppy-o"
+            )
+          )
+
+        },
+        align: "CENTER"
+      )
+    }
+  )
+)

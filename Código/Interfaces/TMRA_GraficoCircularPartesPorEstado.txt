@@ -1,0 +1,499 @@
+/* Gráfico de los partes por estado. */
+
+a!localVariables(
+  local!parteSeleccionado,
+  local!mostrarParte: false,
+  local!parte,
+  local!maquina,
+  local!actualizacion,
+  if(
+    not(local!mostrarParte),
+    {
+      a!pieChartField(
+        data: a!recordData(
+          recordType: 'recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte',
+          filters: a!queryLogicalExpression(
+            operator: "AND",
+            filters: {
+              a!queryFilter(
+                field: 'recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{61f4dfe9-5709-4e04-a5cb-6fa4aa39a167}estaActivo',
+                operator: "=",
+                value: true
+              )
+            },
+            ignoreFiltersWithEmptyValues: true
+          )
+        ),
+        config: a!pieChartConfig(
+          primaryGrouping: a!grouping(
+            field: 'recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado',
+            alias: "estadoParte"
+          ),
+          measures: a!measure(
+            function: "COUNT",
+            field: 'recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{3f384ff0-002a-471a-bb0c-14a42ade735d}ordenTrabajo',
+            alias: "medida_cuenta_ordenTrabajoParte"
+          ),
+          link: a!dynamicLink(
+            value: fv!selection.estadoParte,
+            saveInto: { local!parteSeleccionado }
+          )
+        ),
+        label: "Partes por estado",
+        instructions: "Para ver la lista de partes en curso / en suspensión / cerrados con problemas / resueltos, haz  clic en la correspondiente sección del gráfico",
+        showDataLabels: true,
+        showTooltips: true,
+        showAsPercentage: true,
+        showWhen: a!isNullOrEmpty(local!parteSeleccionado),
+        colorScheme: "MOSS",
+        style: "PIE"
+      ),
+      a!sideBySideLayout(
+        items: {
+          a!sideBySideItem(
+            item: a!richTextDisplayField(
+              label: "Rich Text",
+              labelPosition: "COLLAPSED",
+              value: {
+                a!richTextIcon(icon: "long-arrow-left", color: "#3d85c6")
+              },
+              align: "RIGHT"
+            ),
+            width: "MINIMIZE"
+          ),
+          a!sideBySideItem(
+            item: a!linkField(
+              labelPosition: "COLLAPSED",
+              links: a!dynamicLink(
+                label: "Volver al gráfico",
+                value: null,
+                saveInto: local!parteSeleccionado
+              )
+            )
+          )
+        },
+        /*Only shows when local!selectedVehicleStatus is not null or empty*/
+        showWhen: a!isNotNullOrEmpty(local!parteSeleccionado),
+        spacing: "DENSE"
+      ),
+      a!gridField_23r3(
+        label: "Máquinas con estado " & local!parteSeleccionado,
+        labelPosition: "ABOVE",
+        data: a!recordData(
+          recordType: 'recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte',
+          filters: a!queryLogicalExpression(
+            operator: "AND",
+            filters: {
+              a!queryFilter(
+                field: 'recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado',
+                operator: "=",
+                value: local!parteSeleccionado
+              ),
+              a!queryFilter(
+                field: 'recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{61f4dfe9-5709-4e04-a5cb-6fa4aa39a167}estaActivo',
+                operator: "=",
+                value: true
+              )
+            },
+            ignoreFiltersWithEmptyValues: true
+          )
+        ),
+        columns: {
+          a!gridColumn(
+            label: "Orden de trabajo",
+            sortField: 'recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{3f384ff0-002a-471a-bb0c-14a42ade735d}ordenTrabajo',
+            value: a!linkField(
+              links: {
+                a!dynamicLink(
+                  label: fv!row['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{3f384ff0-002a-471a-bb0c-14a42ade735d}ordenTrabajo'],
+                  value: fv!row,
+                  saveInto: {
+                    local!parte,
+                    a!save(local!mostrarParte, true),
+                    a!save(
+                      local!maquina,
+                      fv!row['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.relationships.{3b7c775c-c414-4dc6-8a42-2d2b37ad939c}tmraMaquina']
+                    )
+                  }
+                )
+              }
+            ),
+            align: "CENTER",
+            width: "NARROW"
+          ),
+          a!gridColumn(
+            label: "Fecha de apertura",
+            sortField: 'recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{51981084-667e-4270-b52a-243757fcf75c}fechaInicio',
+            value: text(fv!row['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{51981084-667e-4270-b52a-243757fcf75c}fechaInicio'], "dd/mm/yyyy"),
+            align: "CENTER",
+            width: "NARROW_PLUS"
+          ),
+          
+          a!gridColumn(
+            label: "Fecha de cierre",
+            sortField: 'recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{6bdad6b8-6a0a-40d3-92c3-3a3a0b1b2abe}fechaFin',
+            value: if(
+              
+              a!isNullOrEmpty(fv!row['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{6bdad6b8-6a0a-40d3-92c3-3a3a0b1b2abe}fechaFin']),
+              " - Aún no cerrado -",
+              text(fv!row['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{6bdad6b8-6a0a-40d3-92c3-3a3a0b1b2abe}fechaFin'], "dd/mm/yyyy"),
+            ),
+            align: "CENTER",
+            width: "NARROW_PLUS"
+            
+          ),
+          
+          a!gridColumn(
+            label: "Horas trabajadas",
+            sortField: 'recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.relationships.{7d42f840-9882-4b10-a79c-bb55be1ed542}tmraActualizacionParte.fields.{75f5ffea-b9eb-4cbc-941b-9bf2c4c72633}horasTrabajadas',
+            value: sum(fv!row['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.relationships.{7d42f840-9882-4b10-a79c-bb55be1ed542}tmraActualizacionParte.fields.{75f5ffea-b9eb-4cbc-941b-9bf2c4c72633}horasTrabajadas']),
+            align: "CENTER",
+            width: "NARROW_PLUS"
+          ),
+          
+          a!gridColumn(
+            label: "Criticidad",
+            sortField: 'recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{9e38ef10-f57d-4892-a791-4a4149471465}criticidad',
+            value: fv!row['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{9e38ef10-f57d-4892-a791-4a4149471465}criticidad'],
+            align: "CENTER",
+          ),
+          a!gridColumn(
+            label: "Máquina afectada",
+            sortField: 'recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.relationships.{3b7c775c-c414-4dc6-8a42-2d2b37ad939c}tmraMaquina.fields.{49395354-b59c-4d48-8cb7-b2bd1c740f8c}nombre',
+            value: fv!row['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.relationships.{3b7c775c-c414-4dc6-8a42-2d2b37ad939c}tmraMaquina.fields.{49395354-b59c-4d48-8cb7-b2bd1c740f8c}nombre'] & " | " & fv!row['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.relationships.{3b7c775c-c414-4dc6-8a42-2d2b37ad939c}tmraMaquina.fields.{f7745e36-998c-4218-8b50-0f76f12145ba}marca'] & " " & fv!row['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.relationships.{3b7c775c-c414-4dc6-8a42-2d2b37ad939c}tmraMaquina.fields.{4042bdf5-9551-4b97-8cf1-9fa7475ff423}modelo'],
+            width: "MEDIUM_PLUS",
+            align: "CENTER",
+
+          ),
+          a!gridColumn(
+            label: "Nº de serie de la máquina afectada",
+            sortField: 'recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.relationships.{3b7c775c-c414-4dc6-8a42-2d2b37ad939c}tmraMaquina.fields.{56f17aea-a4d7-4a7b-a518-ee01cc73eb9e}nSerie',
+            value: fv!row['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.relationships.{3b7c775c-c414-4dc6-8a42-2d2b37ad939c}tmraMaquina.fields.{56f17aea-a4d7-4a7b-a518-ee01cc73eb9e}nSerie'],
+            align: "CENTER",
+          ),
+          a!gridColumn(
+            label: "Empleado que abrió la incidencia",
+            sortField: 'recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.relationships.{eae2fdc2-e703-44b1-b2d1-c6470a394130}tmraEmpleadoHospital.relationships.{8a4c3f69-cc1d-41db-9fd6-2763091c3ded}tmraEmpleado.fields.{ea49ffaf-1db8-45a1-aa54-54fa8f543fd0}nombre',
+            value: fv!row['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.relationships.{eae2fdc2-e703-44b1-b2d1-c6470a394130}tmraEmpleadoHospital.relationships.{8a4c3f69-cc1d-41db-9fd6-2763091c3ded}tmraEmpleado.fields.{ea49ffaf-1db8-45a1-aa54-54fa8f543fd0}nombre'] & " " & fv!row['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.relationships.{eae2fdc2-e703-44b1-b2d1-c6470a394130}tmraEmpleadoHospital.relationships.{8a4c3f69-cc1d-41db-9fd6-2763091c3ded}tmraEmpleado.fields.{a3d16573-1c20-4967-816e-7796933eb5ba}primerApellido'] & " " & fv!row['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.relationships.{eae2fdc2-e703-44b1-b2d1-c6470a394130}tmraEmpleadoHospital.relationships.{8a4c3f69-cc1d-41db-9fd6-2763091c3ded}tmraEmpleado.fields.{80d68571-ab99-43b4-9948-8228ee24a7d9}segundoApellido']
+            ,            align: "CENTER",
+          ),
+          a!gridColumn(
+            label: "Técnico asignado",
+            sortField: 'recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.relationships.{5cb03b4d-b734-4a6f-944a-f135ae04ca71}tmraTecnico.relationships.{68cb95cc-f63f-4d1a-b290-8d30e056c923}tmraEmpleado.fields.{ea49ffaf-1db8-45a1-aa54-54fa8f543fd0}nombre',
+            value: fv!row['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.relationships.{5cb03b4d-b734-4a6f-944a-f135ae04ca71}tmraTecnico.relationships.{68cb95cc-f63f-4d1a-b290-8d30e056c923}tmraEmpleado.fields.{ea49ffaf-1db8-45a1-aa54-54fa8f543fd0}nombre'] & " " & fv!row['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.relationships.{5cb03b4d-b734-4a6f-944a-f135ae04ca71}tmraTecnico.relationships.{68cb95cc-f63f-4d1a-b290-8d30e056c923}tmraEmpleado.fields.{a3d16573-1c20-4967-816e-7796933eb5ba}primerApellido'] & " " & fv!row['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.relationships.{5cb03b4d-b734-4a6f-944a-f135ae04ca71}tmraTecnico.relationships.{68cb95cc-f63f-4d1a-b290-8d30e056c923}tmraEmpleado.fields.{80d68571-ab99-43b4-9948-8228ee24a7d9}segundoApellido']
+            ,            align: "CENTER",
+          )
+        },
+        showWhen: a!isNotNullOrEmpty(local!parteSeleccionado),
+        spacing: "DENSE",
+        refreshAfter: "RECORD_ACTION",
+        showSearchBox: false,
+        showRefreshButton: false,
+        recordActions: {}
+      )
+    },
+    a!sectionLayout(
+      contents: {
+        rule!TMRA_CabeceraParteSummaryView(
+          local!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{3f384ff0-002a-471a-bb0c-14a42ade735d}ordenTrabajo']
+        ),
+        a!boxLayout(
+          label: "Datos de apertura",
+          contents: {
+            a!sideBySideLayout(
+              items: {
+                a!sideBySideItem(
+                  item: a!textField(
+                    label: "Fecha de inicio: ",
+                    labelPosition: "ADJACENT",
+                    value: text(local!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{51981084-667e-4270-b52a-243757fcf75c}fechaInicio'], "dd/mm/yyyy"),
+                    
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                ),
+                a!sideBySideItem(
+                  item: a!textField(
+                    label: "Estado: ",
+                    labelPosition: "ADJACENT",
+                    value: local!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91789995-14ea-4de7-ac7a-e7a444e0f7a4}estado'],
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                ),
+                a!sideBySideItem(
+                  item: a!textField(
+                    label: "Criticidad: ",
+                    labelPosition: "ADJACENT",
+                    value: local!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{9e38ef10-f57d-4892-a791-4a4149471465}criticidad'],
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                )
+              }
+            ),
+            a!sideBySideLayout(
+              items: {
+                a!sideBySideItem(
+                  item: a!textField(
+                    label: "Máquina afectada:",
+                    labelPosition: "ADJACENT",
+                    value: local!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{49395354-b59c-4d48-8cb7-b2bd1c740f8c}nombre'],
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                ),
+                a!sideBySideItem(
+                  item: a!textField(
+                    label: "Marca:",
+                    labelPosition: "ADJACENT",
+                    value: local!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{f7745e36-998c-4218-8b50-0f76f12145ba}marca'],
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                ),
+                a!sideBySideItem(
+                  item: a!textField(
+                    label: "Modelo:",
+                    labelPosition: "ADJACENT",
+                    value: local!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{4042bdf5-9551-4b97-8cf1-9fa7475ff423}modelo'],
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                )
+              }
+            ),
+            a!textField(
+              label: "Nº de serie:",
+              labelPosition: "ADJACENT",
+              value: local!maquina['recordType!{3ff50676-5f54-46e4-974e-2ed9738ec786}TMRA Maquina.fields.{56f17aea-a4d7-4a7b-a518-ee01cc73eb9e}nSerie'],
+              refreshAfter: "UNFOCUS",
+              readOnly: true,
+              validations: {}
+            ),
+            a!paragraphField(
+              label: "Descripción de la avería:",
+              labelPosition: "ADJACENT",
+              value: local!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{82b0a286-0506-4e23-88a0-61a75b7fcecd}descripcionAveria'],
+              saveInto: {},
+              refreshAfter: "UNFOCUS",
+              height: "MEDIUM",
+              readOnly: true,
+              validations: {}
+            ),
+            a!imageField(
+              label: "Fotografía de la avería:",
+              labelPosition: "ADJACENT",
+              images: {
+                a!documentImage(document: a!EXAMPLE_DOCUMENT_IMAGE())
+              },
+              showWhen: a!isNotNullOrEmpty(
+                local!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{3c8ff08f-36b9-41d0-bbd7-b575714a659c}fotoAveria']
+              ),
+              size: "MEDIUM",
+              isThumbnail: false,
+              style: "STANDARD"
+            )
+          },
+          style: "STANDARD",
+          marginAbove: "STANDARD",
+          marginBelow: "STANDARD"
+        ),
+        a!boxLayout(
+          label: "Actualizaciones realizadas",
+          contents: {
+            a!gridField_23r3(
+              label: "",
+              labelPosition: "ABOVE",
+              data: local!actualizacion,
+              columns: {
+                a!gridColumn(
+                  label: "Fecha",
+                  value: fv!row['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{d9374b0e-f6d8-4be2-9978-cd21fbe061e6}fecha']
+                ),
+                a!gridColumn(
+                  label: "Técnico que actualizó",
+                  value: rule!TMRA_ObtenerNombreCompletoTecnicoPorId(
+                    fv!row['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.relationships.{65232d99-3a81-40b9-b545-9f40cab7a1a0}tmraTecnicoRealizaActualizacion.relationships.{98e64bb6-59bf-4db8-b87d-ed40c84df022}tmraTecnico.fields.{8aa19895-e18a-4667-97f6-dcf2a51293ec}id']
+                  )
+                ),
+                a!gridColumn(
+                  label: "Horas trabajadas",
+                  value: fv!row['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{75f5ffea-b9eb-4cbc-941b-9bf2c4c72633}horasTrabajadas']
+                ),
+                a!gridColumn(
+                  label: "Acciones realizadas",
+                  value: fv!row['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{c5711d2b-c64c-4410-8081-2fe6a640070c}comentario']
+                )
+              },
+              showwhen: a!isNotNullOrEmpty(local!actualizacion),
+              validations: {}
+            ),
+            a!textField(
+              value: "- Sin actualizaciones -",
+              showwhen: a!isNullOrEmpty(local!actualizacion),
+              readOnly: true,
+              align: "CENTER"
+            )
+          },
+          /* 
+              Las actualizaciones las mostrará sólo si el usuario loggeado está en el grupo de supervisores 
+              o en el de técnicos. Los empleados sólo deben ver la resolución final.
+              */
+          showWhen: a!isUserMemberOfGroup(
+            username: loggedInUser(),
+            groups: {
+              cons!TMRA_GRUPO_TECNICOS,
+              cons!TMRA_GRUPO_SUPERVISORES
+            }
+          ),
+          style: "STANDARD",
+          marginBelow: "STANDARD"
+        ),
+        a!boxLayout(
+          label: "Control final",
+          contents: {
+            a!sideBySideLayout(
+              items: {
+                a!sideBySideItem(
+                  item: a!textField(
+                    label: "Fecha de cierre: ",
+                    labelPosition: "ADJACENT",
+                    value: if(
+                      condition: a!isNullOrEmpty(
+                        local!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{6bdad6b8-6a0a-40d3-92c3-3a3a0b1b2abe}fechaFin']
+                      ),
+                      valueIfTrue: "Parte aún no cerrado",
+                      valueIfFalse: text(local!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{6bdad6b8-6a0a-40d3-92c3-3a3a0b1b2abe}fechaFin'], "dd/mm/yyyy"),
+                    ),
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                ),
+                a!sideBySideItem(
+                  item: a!textField(
+                    label: "Gastos asociados: ",
+                    labelPosition: "ADJACENT",
+                    value: local!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{97a973ee-33b3-4868-abb4-e37abf348274}horasDuracion'] & " €",
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                ),
+                a!sideBySideItem(
+                  item: a!textField(
+                    label: "Precio total: ",
+                    labelPosition: "ADJACENT",
+                    value: local!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{9f0eca1b-7744-4a16-8ecb-a5a403869753}precio'] & " €",
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                )
+              }
+            ),
+            a!sideBySideLayout(
+              items: {
+                a!sideBySideItem(
+                  item: a!textField(
+                    label: "Duración: ",
+                    labelPosition: "ADJACENT",
+                    helpTooltip: "Duración de la actualización final antes del cierre del parte.",
+                    value: if(
+                      a!isNullOrEmpty(local!actualizacion),
+                      local!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{97a973ee-33b3-4868-abb4-e37abf348274}horasDuracion'] & " horas",
+                      (
+                        local!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{97a973ee-33b3-4868-abb4-e37abf348274}horasDuracion'] - sum(
+                          local!actualizacion['recordType!{a53cd54c-881e-4d28-90cb-15964b5c7bd4}TMRA Actualizacion Parte.fields.{75f5ffea-b9eb-4cbc-941b-9bf2c4c72633}horasTrabajadas']
+                        )
+                      ) & " horas"
+
+                    ),
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                ),
+                a!sideBySideItem(
+                  item: a!textField(
+                    label: "Duración total:",
+                    labelPosition: "ADJACENT",
+                    helpTooltip: "Duración total desde la apertura del parte hasta su resolución.",
+                    value: local!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{97a973ee-33b3-4868-abb4-e37abf348274}horasDuracion'] & " horas",
+                    saveInto: {},
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                ),
+                a!sideBySideItem(
+                  item: a!textField(
+                    label: "",
+                    labelPosition: "ADJACENT",
+                    saveInto: {},
+                    refreshAfter: "UNFOCUS",
+                    readOnly: true,
+                    validations: {}
+                  )
+                )
+              }
+            ),
+            a!paragraphField(
+              label: "Descripción de la reparación:",
+              labelPosition: "ADJACENT",
+              value: local!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{e27bccbb-c120-4a84-a426-f48019909d80}descripcionReparacion'],
+              saveInto: {},
+              refreshAfter: "UNFOCUS",
+              height: "MEDIUM",
+              readOnly: true,
+              validations: {}
+            ),
+            a!signatureField(
+              label: "Firma del técnico",
+              labelPosition: "ADJACENT",
+              value: if(
+                condition: or(
+                  a!isNullOrEmpty(
+                    local!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91b346c9-6d03-4b0a-9d31-540a76ef68be}firmaTecnico']
+                  ),
+                  local!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91b346c9-6d03-4b0a-9d31-540a76ef68be}firmaTecnico'] = 0
+                ),
+                valueIfTrue: null,
+                valueIfFalse: local!parte['recordType!{15847ae8-03f7-4161-95cc-e085e6536d87}TMRA Parte.fields.{91b346c9-6d03-4b0a-9d31-540a76ef68be}firmaTecnico']
+              ),
+              readOnly: true,
+              showWhen: {}
+            )
+          },
+          style: "STANDARD",
+          marginBelow: "STANDARD"
+        ),
+        a!sectionLayout(
+          contents: {
+            a!buttonArrayLayout(
+              buttons: {
+                a!buttonWidget_23r3(
+                  label: "Volver",
+                  value: false,
+                  saveInto: {
+                    local!mostrarParte,
+                    a!save(local!maquina, null)
+                  }
+                )
+              },
+              align: "CENTER"
+            )
+          },
+          marginAbove: "STANDARD"
+        )
+      }
+    )
+  )
+)

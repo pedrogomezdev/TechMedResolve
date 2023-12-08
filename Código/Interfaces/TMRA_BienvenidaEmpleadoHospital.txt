@@ -1,0 +1,288 @@
+/* Interfaz de bienvenida a la aplicación para los empleados del hospital. En esta interfaz se indica la utilidad de la aplicación y de los botones del menú. */
+
+a!headerContentLayout(
+  header: {
+    /* Como cabecera, muestra una tarjeta con la imagen del logo de la aplicación.*/
+    a!cardLayout(
+      contents: {
+        a!imageField(
+          label: "",
+          labelPosition: "ABOVE",
+          images: {
+            a!documentImage(
+              document: cons!TMRA_LOGO
+            )
+          },
+          size: "LARGE",
+          isThumbnail: false,
+          style: "STANDARD",
+          align: "CENTER"
+        )
+      },
+      height: "AUTO",
+      style: "#ffffff",
+      marginBelow: "NONE",
+      showBorder: true
+    )
+  },
+  contents: {
+
+    a!richTextDisplayField(
+      labelPosition: "COLLAPSED",
+      value:  {
+        a!richTextItem(
+          /* Indicamos el nombre de usuario de quién ha iniciado sesión.*/
+          text: "Has iniciado sesión como " & user(loggedInUser(), "username"),
+          size: "MEDIUM",
+          style: "STRONG"
+        ),
+        char(10),
+        char(10),
+        a!richTextItem(
+          /* Saludamos al usuario indicando su nombre y le explicamos la funcionalidad de la aplicación. */
+          text: "Bienvenido/a " & user(loggedInUser(), "firstName") & ". Esta aplicación está destinada a los empleados del hospital, y te permitirá abrir incidencias relacionadas con las diferentes máquinas de electromedicina del mismo así como ver el estado de dichas incidencias y quién las está resolviendo. Además, tiene un sistema de mensajería interno mediante el cual podrás mantenerte en contacto con los técnicos, supervisores y otros empleados del hospital cuando lo necesites.",
+          size: "MEDIUM"
+        ),
+        /* Salto de linea. */
+        char(10),
+        char(10),
+
+        /* Hacemos uso de nuestra expression rule que obtiene el tipo de pantalla, y en función del tipo que sea, le indicamos al usuario dónde se ubican los botones del menú: */
+        a!richTextItem(
+          text: if(
+            or(
+              rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[1],
+              rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[2],
+              rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[3]
+            ),
+            "En la parte inferior de esta ventana puedes ver un menú con tres botones claramente diferenciados: ",
+            "En la parte superior de esta ventana puedes ver un menú con tres botones claramente diferenciados: "
+          ),
+          size: "MEDIUM"
+
+        ),
+
+        /* Ponemos este texto en negrita */
+        a!richTextItem(
+          text: "Inicio, Mis incidencias y Mensajes. ",
+          size: "MEDIUM",
+          style: "STRONG"
+
+        ),
+
+
+        a!richTextItem(
+          text: "Al pulsar sobre ellos se nos dirigirá a la ventana correspondiente a una funcionalidad específica de esta aplicación. A continuación se explica el funcionamiento de cada una de ellas:",
+          size: "MEDIUM"
+
+        ),
+
+        char(10),
+        char(10)
+
+      }
+
+    ),
+
+    /* 
+
+    Creamos un layout formado por tres columnas. Cada columna tendrá una tarjeta con otra tarjeta en su interior y un  texto.
+      - La tarjeta interior almacenará un icono con el símbolo de uno de los botones del menú seguido del nombre de dicho botón.
+      - El texto explica la utilidad de la sección de la aplicación correspondiente al botón que se está explicando.
+
+    En función del tipo de pantalla, se mostrarán los componentes de una forma u otra. 
+    */
+    a!columnsLayout(
+      columns: {
+        a!columnLayout(
+          contents: {
+
+            a!cardLayout(
+              contents: {
+                a!cardLayout(
+                  contents: {
+                    a!sideBySideLayout(
+                      items: {
+                        a!sideBySideItem(
+                          item: a!stampField(
+                            labelPosition: "COLLAPSED",
+                            icon: "info",
+                            contentColor: "STANDARD",
+                            size: if(rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[2], "TINY", "SMALL"),
+                            align: "END"
+                          ),
+                          width: "MINIMIZE"
+                        ),
+                        a!sideBySideItem(
+                          item: a!richTextDisplayField(
+                            labelPosition: "COLLAPSED",
+                            value: {
+                              a!richTextHeader(
+                                text: {
+                                  "INICIO"
+                                },
+                                size: if(rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[2], "SMALL", "MEDIUM")
+                              )
+                            }
+                          )
+                        )
+                      },
+                      alignVertical: "MIDDLE",
+                      spacing: "STANDARD"
+                    )
+                  },
+                  height: "AUTO",
+                  style: "#0c343d",
+                  marginBelow: "STANDARD"
+                ),
+                a!richTextDisplayField(
+                  labelPosition: "COLLAPSED",
+                  value: {
+                    a!richTextItem(
+                      text: {
+                        "Esta es la ventana en la que te encuentras. Donde se te da la bienvenida y se explica cómo acceder a cada parte de la aplicación."
+                      },
+
+                      size: if(rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[2], "STANDARD", "MEDIUM")
+                    )
+                  },
+                  preventWrapping: false
+                )
+              },
+              height: "MEDIUM_PLUS",
+              style: "#d0e0e3",
+              marginBelow: "STANDARD"
+            )
+          }
+        ),
+        a!columnLayout(
+          contents: {
+            a!cardLayout(
+              contents: {
+                a!cardLayout(
+                  contents: {
+                    a!sideBySideLayout(
+                      items: {
+                        a!sideBySideItem(
+                          item: a!stampField(
+                            labelPosition: "COLLAPSED",
+                            icon: "file",
+                            contentColor: "STANDARD",
+                            size: if(rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[2], "TINY", "SMALL"),
+                            align: "END"
+                          ),
+                          width: "MINIMIZE"
+                        ),
+                        a!sideBySideItem(
+                          item: a!richTextDisplayField(
+                            labelPosition: "COLLAPSED",
+                            value: {
+                              a!richTextHeader(
+
+                                text: {
+                                  "MIS INCIDENCIAS"
+                                },
+                                size: if(rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[2], "SMALL", "MEDIUM")
+                              )
+                            }
+                          )
+                        )
+                      },
+                      alignVertical: "MIDDLE",
+                      spacing: "STANDARD"
+                    )
+                  },
+                  height: "AUTO",
+                  style: "#0c343d",
+                  marginBelow: "STANDARD"
+                ),
+                a!richTextDisplayField(
+                  labelPosition: "COLLAPSED",
+                  value: {
+                    a!richTextItem(
+                      text: {
+                        "En esta ventana podrás abrir nuevas incidencias, visualizar las incidencias que estén abiertas por ti, revisar su estado, ver la información sobre quién atiende dichas incidencias, etc."
+                      },
+                      size: if(rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[2], "STANDARD", "MEDIUM")
+                    )
+                  },
+                  preventWrapping: false
+                )
+              },
+              height: "MEDIUM_PLUS",
+              style: "#d0e0e3",
+              marginBelow: "STANDARD"
+            )
+          }
+        ),
+        a!columnLayout(
+          contents: {
+            a!cardLayout(
+              contents: {
+                a!cardLayout(
+                  contents: {
+                    a!sideBySideLayout(
+                      items: {
+                        a!sideBySideItem(
+                          item: a!stampField(
+                            labelPosition: "COLLAPSED",
+                            icon: "envelope",
+                            contentColor: "STANDARD",
+                            size: if(rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[2], "TINY", "SMALL"),
+                            align: "END"
+                          ),
+                          width: "MINIMIZE"
+                        ),
+                        a!sideBySideItem(
+                          item: a!richTextDisplayField(
+                            labelPosition: "COLLAPSED",
+                            value: {
+                              a!richTextHeader(
+                                text: {
+                                  "MENSAJES"
+                                },
+                                size: if(rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[2], "SMALL", "MEDIUM")
+                              )
+                            }
+                          )
+                        )
+                      },
+                      alignVertical: "MIDDLE",
+                      spacing: "STANDARD"
+                    )
+                  },
+                  height: "AUTO",
+                  style: "#0c343d",
+                  marginBelow: "STANDARD"
+                ),
+                a!richTextDisplayField(
+                  labelPosition: "COLLAPSED",
+                  value: {
+                    a!richTextItem(
+                      text: {
+                        "En esta ventana, tendrás a tu disposición un sistema de mensajería interna en la que podrás enviar mensajes internos a otros usuarios, ya sean técnicos, otros empleados del hospital o un supervisor. "
+                      },
+                      size: if(rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[2], "STANDARD", "MEDIUM")
+                    ),
+                    char(10),
+                    char(10),
+                    a!richTextItem(
+                      text: {
+                        "También tendrás una bandeja de entrada y otra de salida, donde podrás visualizar y gestionar los mensajes enviados y recibidos."
+                      },
+                      size: if(rule!TMRA_ObtenerTipoPantalla() = cons!TMRA_TIPOS_PANTALLA[2], "STANDARD", "MEDIUM")
+                    )
+                  },
+                  preventWrapping: false
+                )
+              },
+              height: "MEDIUM_PLUS",
+              style: "#d0e0e3",
+              marginBelow: "STANDARD"
+            )
+          }
+        )
+      }
+    )
+  }
+)
