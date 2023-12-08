@@ -27,5 +27,3 @@ Este repositorio contiene los componentes esenciales del proyecto, organizados e
 
 - **Código:** Incluye el código de las Expression Rules y las interfaces de la aplicación. Dado que el proyecto se desarrolló en una versión de aprendizaje de Appian que no permite la exportación completa, aquí encontrarás los elementos esenciales para entender la lógica de la aplicación.
 
-Asimismo, podrás encontrar un **manual-de-usuario** en formato PDF para obtener orientación sobre cómo utilizar TECHMED RESOLVE.
-
