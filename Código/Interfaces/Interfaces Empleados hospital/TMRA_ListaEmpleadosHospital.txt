@@ -1,0 +1,157 @@
+/* Lista que muestra todos los empleados en el sistema y que permite un CRUD completo. */
+
+a!localVariables(
+  local!mostrarEmpHospital: false,
+  local!empleadoHospital,
+  local!nEmpleado,
+  local!empleado,
+  if(
+    not(local!mostrarEmpHospital),
+    {
+      a!gridField_23r3(
+
+        label: "",
+        labelPosition: "ABOVE",
+        data: a!recordData(
+          recordType: 'recordType!{02acd5dc-7ec9-4237-8e90-70914889db6f}TMRA Empleado Hospital',
+          filters: a!queryLogicalExpression(
+            operator: "AND",
+            filters: {
+              a!queryFilter(
+                field: 'recordType!{02acd5dc-7ec9-4237-8e90-70914889db6f}TMRA Empleado Hospital.fields.{b019020c-dfa5-45ee-8587-81e25d9ee4e5}estaActivo',
+                operator: "=",
+                value: true
+              )
+            },
+            ignoreFiltersWithEmptyValues: true
+          )
+        ),
+        columns: {
+          a!gridColumn(
+            label: "Foto",
+            align: "CENTER",
+            value: a!imageField(
+              images: a!documentImage(
+                document: if(
+                  a!isNullOrEmpty(fv!row['recordType!{02acd5dc-7ec9-4237-8e90-70914889db6f}TMRA Empleado Hospital.relationships.{8a4c3f69-cc1d-41db-9fd6-2763091c3ded}tmraEmpleado.fields.{cdfff844-7812-4d01-8ec3-5beff29b0fb5}fotografia']),
+                  a!EXAMPLE_DOCUMENT_IMAGE(),
+                  index(
+                    fv!row,
+                    'recordType!{02acd5dc-7ec9-4237-8e90-70914889db6f}TMRA Empleado Hospital.relationships.{8a4c3f69-cc1d-41db-9fd6-2763091c3ded}tmraEmpleado.fields.{cdfff844-7812-4d01-8ec3-5beff29b0fb5}fotografia',
+                    a!EXAMPLE_DOCUMENT_IMAGE()
+                  )
+                )
+              ),
+              size: "SMALL",
+              style: "AVATAR"
+            ),
+            width: "ICON"
+          ),
+          a!gridColumn(
+            label: "Nº Empleado",
+            value: a!linkField(
+              links: {
+                a!dynamicLink(
+                  label: fv!row['recordType!{02acd5dc-7ec9-4237-8e90-70914889db6f}TMRA Empleado Hospital.relationships.{8a4c3f69-cc1d-41db-9fd6-2763091c3ded}tmraEmpleado.fields.{07e5897a-ae7d-47fe-b477-ec0d777c3fa5}nEmpleado'],
+                  value: true,
+                  saveInto: {
+                    local!mostrarEmpHospital,
+                    a!save(
+                      local!nEmpleado,
+                      fv!row['recordType!{02acd5dc-7ec9-4237-8e90-70914889db6f}TMRA Empleado Hospital.relationships.{8a4c3f69-cc1d-41db-9fd6-2763091c3ded}tmraEmpleado.fields.{07e5897a-ae7d-47fe-b477-ec0d777c3fa5}nEmpleado']
+                    ),
+                    a!save(
+                      local!empleado,
+                      rule!TMRA_ObtenerEmpleadoPorNEmpleado(local!nEmpleado)
+                    ),
+                    
+                    a!save(
+                      local!empleadoHospital,
+                      rule!TMRA_ObtenerEmpHospitalPorNEmpleado(
+                        fv!row['recordType!{02acd5dc-7ec9-4237-8e90-70914889db6f}TMRA Empleado Hospital.relationships.{8a4c3f69-cc1d-41db-9fd6-2763091c3ded}tmraEmpleado.fields.{07e5897a-ae7d-47fe-b477-ec0d777c3fa5}nEmpleado']
+                      )
+                    )
+                  }
+                )
+              }
+            ),
+            align: "CENTER"
+          ),
+          a!gridColumn(
+            label: "Nombre",
+            value: fv!row['recordType!{02acd5dc-7ec9-4237-8e90-70914889db6f}TMRA Empleado Hospital.relationships.{8a4c3f69-cc1d-41db-9fd6-2763091c3ded}tmraEmpleado.fields.{ea49ffaf-1db8-45a1-aa54-54fa8f543fd0}nombre'],
+            align: "CENTER"
+          ),
+          a!gridColumn(
+            label: "Apellidos",
+            value: fv!row['recordType!{02acd5dc-7ec9-4237-8e90-70914889db6f}TMRA Empleado Hospital.relationships.{8a4c3f69-cc1d-41db-9fd6-2763091c3ded}tmraEmpleado.fields.{a3d16573-1c20-4967-816e-7796933eb5ba}primerApellido'] & " " & fv!row['recordType!{02acd5dc-7ec9-4237-8e90-70914889db6f}TMRA Empleado Hospital.relationships.{8a4c3f69-cc1d-41db-9fd6-2763091c3ded}tmraEmpleado.fields.{80d68571-ab99-43b4-9948-8228ee24a7d9}segundoApellido'],
+            align: "CENTER"
+          
+          ),
+          a!gridColumn(
+            label: "Puesto",
+            value: fv!row['recordType!{02acd5dc-7ec9-4237-8e90-70914889db6f}TMRA Empleado Hospital.fields.{2dcf56ab-7112-45e8-9189-0a869aecccca}puesto'],
+            align: "CENTER"
+          ),
+          a!gridColumn(
+            label: "Área",
+            value: fv!row['recordType!{02acd5dc-7ec9-4237-8e90-70914889db6f}TMRA Empleado Hospital.fields.{89a691c0-7bbe-4898-ada9-dcbede6e810a}area'],
+            align: "CENTER"
+          ),
+          
+          a!gridColumn(
+            label: "Acciones",
+            align: "CENTER",
+            value: a!recordActionField_23r3(
+              actions: {
+                a!recordActionItem(
+                  action: 'recordType!{02acd5dc-7ec9-4237-8e90-70914889db6f}TMRA Empleado Hospital.actions.{3e7014f6-5c31-424b-9e77-6b69d2b85582}eliminarEmpleadoDelHospital',
+                  identifier: fv!identifier
+                ),
+                
+                a!recordActionItem(
+                  action: 'recordType!{02acd5dc-7ec9-4237-8e90-70914889db6f}TMRA Empleado Hospital.actions.{913a2736-1783-4a4c-b840-61be665e691c}actualizarEmpleadoDelHospital',
+                  identifier: fv!identifier
+                )
+              },
+              style: "SIDEBAR",
+              display: "ICON",
+              align: "CENTER"
+            )
+          )
+        },
+        validations: {},
+        refreshAfter: "RECORD_ACTION",
+        showSearchBox: true,
+        showRefreshButton: true,
+        recordActions: {
+          a!recordActionItem(
+            action: 'recordType!{02acd5dc-7ec9-4237-8e90-70914889db6f}TMRA Empleado Hospital.actions.{20e9d348-19fe-4d05-b0ba-17e15aa97da8}anadirEmpleadoDelHospital'
+          )
+        }
+      )
+    },
+    
+    
+    a!headerContentLayout(
+      header: {
+        rule!TMRA_CabeceraInformacionEmpleado(local!empleado)
+      },
+      contents: {
+        rule!TMRA_InformacionEmpleadoHospitalSummary(
+          empleado: local!empleado,
+          empHospital: local!empleadoHospital
+        ),
+        a!buttonArrayLayout(
+          buttons: { 
+            a!buttonWidget_23r3(
+              label: "Volver", 
+              value: false,
+              saveInto: local!mostrarEmpHospital
+            ) },
+          align: "CENTER"
+        )
+      }
+    )
+  )
+)
